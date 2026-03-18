@@ -51,23 +51,8 @@ export default function Popup({ alert, onClose }: Props) {
 
   return (
     <>
-      {/* 반투명 오버레이 — 탭하면 닫힘 */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 998,
-          background: 'rgba(0,0,0,0.4)',
-          backdropFilter: 'blur(2px)',
-          WebkitBackdropFilter: 'blur(2px)',
-          animation: 'fadeIn 0.3s ease both',
-        }}
-      />
-
-      {/* 팝업 카드 — 모바일은 하단, 데스크탑은 우상단 */}
       <div style={{
         position: 'fixed', zIndex: 999,
-
-        // 데스크탑
         top: 'var(--popup-top, 22px)',
         right: 'var(--popup-right, 22px)',
         left: 'var(--popup-left, auto)',
@@ -136,7 +121,6 @@ export default function Popup({ alert, onClose }: Props) {
       </div>
 
       <style>{`
-        /* 모바일: 하단 시트 스타일 */
         @media (max-width: 600px) {
           :root {
             --popup-top: auto;
@@ -145,10 +129,6 @@ export default function Popup({ alert, onClose }: Props) {
             --popup-bottom: 0;
             --popup-width: 100%;
           }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
         }
         @keyframes popupIn {
           from { opacity:0; transform:translateY(-12px) scale(0.96); }
