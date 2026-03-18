@@ -32,7 +32,7 @@ export function useAlertStore() {
     setLogs(prev => [{ id: _logId++, time: ts(), msg, type }, ...prev].slice(0, 50));
   }, []);
 
-  const startTicker = useCallback((currentAlerts: AlertItem[]) => {
+  const startTicker = useCallback((_currentAlerts: AlertItem[]) => {
     if (tickerRef.current) return;
     tickerRef.current = setInterval(() => {
       setAlerts(prev => {
