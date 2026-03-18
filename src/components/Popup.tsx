@@ -60,8 +60,8 @@ export default function Popup({ alert, onClose }: Props) {
         width: 'var(--popup-width, 300px)',
       }}>
         <div style={{
-          background: 'var(--bg-2)',
-          border: '1px solid var(--green-brd)',
+          background: '#18181c',
+          border: '1px solid rgba(62,207,142,0.25)',
           borderRadius: 22, padding: '16px 18px',
           boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
           animation: 'popupIn 0.45s cubic-bezier(0.34,1.4,0.64,1) both',
@@ -86,7 +86,7 @@ export default function Popup({ alert, onClose }: Props) {
 
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'var(--bg-3)', border: '1px solid var(--border)',
+            background: '#202025', border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: 10, padding: '9px 12px', marginBottom: 12,
           }}>
             <span style={{ fontSize: 13, fontWeight: 500 }}>{alert.name}</span>
@@ -105,14 +105,14 @@ export default function Popup({ alert, onClose }: Props) {
             </button>
             <button onClick={onClose} style={{
               height: 32, padding: '0 14px', borderRadius: 10,
-              border: '1px solid var(--border)', background: 'var(--bg-3)',
-              color: 'var(--text-1)', fontSize: 12, fontFamily: 'var(--sans)', cursor: 'pointer',
+              border: '1px solid rgba(255,255,255,0.06)', background:'#202025',
+              color: '#a0a0aa', fontSize: 12, fontFamily: 'var(--sans)', cursor: 'pointer',
             }}>
               닫기
             </button>
           </div>
 
-          <div style={{ height: 2, background: 'var(--bg-4)', borderRadius: 99, marginTop: 12, overflow: 'hidden' }}>
+          <div style={{ height: 2, background: '#28282f', borderRadius: 99, marginTop: 12, overflow: 'hidden' }}>
             <div ref={fillRef} style={{
               height: '100%', background: 'var(--green)', borderRadius: 99, width: '100%',
             }} />
