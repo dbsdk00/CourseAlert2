@@ -14,20 +14,25 @@ export default function Popup({ alert, onClose }: Props) {
     if (!alert) return;
 
     const sendNotification = () => {
-      new Notification('🔔 빈자리가 생겼어요!', {
-        body: `${alert.name} · ${alert.day}요일 ${alert.period} (${alert.code})\n지금 바로 수강신청 가능해요`,
-        icon: '/icons/icon-192.png',
-        tag: `course-${alert.code}`,
-        requireInteraction: true,
-      });
+      try {
+        new Notification('🔔 빈자리가 생겼어요!', {
+          body: `${alert.name} · ${alert.day}요일 ${alert.period} (${alert.code})`,
+          icon: '/icons/icon-192.png',
+          tag: `course-${alert.code}`,
+        });
+      } catch (e) {
+        console.log('notification error', e);
+      }
     };
 
-    if (Notification.permission === 'granted') {
-      sendNotification();
-    } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission().then(p => {
-        if (p === 'granted') sendNotification();
-      });
+    if (typeof Notification !== 'undefined') {
+      if (Notification.permission === 'granted') {
+        sendNotification();
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(p => {
+          if (p === 'granted') sendNotification();
+        });
+      }
     }
 
     if (fillRef.current) {
@@ -44,107 +49,110 @@ export default function Popup({ alert, onClose }: Props) {
     }
 
     timerRef.current = setTimeout(onClose, 7200);
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [alert, onClose]);
 
   if (!alert) return null;
 
+  const isMobile = window.innerWidth <= 600;
+
   return (
-    <>
+    <div style={{
+      position: 'fixed',
+      // 모바일: 하단 / 데스크탑: 우상단
+      ...(isMobile
+        ? { bottom: 0, left: 0, right: 0, top: 'auto' }
+        : { top: 22, right: 22, left: 'auto', bottom: 'auto', width: 300 }
+      ),
+      zIndex: 9999,
+    }}>
       <div style={{
-        position: 'fixed', zIndex: 999,
-        top: 'var(--popup-top, 22px)',
-        right: 'var(--popup-right, 22px)',
-        left: 'var(--popup-left, auto)',
-        bottom: 'var(--popup-bottom, auto)',
-        width: 'var(--popup-width, 300px)',
+        margin: isMobile ? '0' : '0',
+        background: '#18181c',
+        border: '1px solid rgba(62,207,142,0.25)',
+        borderRadius: isMobile ? '22px 22px 0 0' : '22px',
+        padding: '20px 18px',
+        boxShadow: '0 -8px 40px rgba(0,0,0,0.5)',
       }}>
-        <div style={{
-          background: '#18181c',
-          border: '1px solid rgba(62,207,142,0.25)',
-          borderRadius: 22, padding: '16px 18px',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
-          animation: 'popupIn 0.45s cubic-bezier(0.34,1.4,0.64,1) both',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%',
-              background: 'var(--green-dim)', border: '1px solid var(--green-brd)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 14, flexShrink: 0,
-              animation: 'iconPop 0.5s 0.2s cubic-bezier(0.34,1.6,0.64,1) both',
-            }}>🔔</div>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--green)' }}>
-                빈자리가 생겼어요!
-              </div>
-              <div style={{ fontSize: 11.5, color: 'var(--text-1)', marginTop: 1 }}>
-                지금 바로 수강신청 가능해요
-              </div>
+        {/* 헤더 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'rgba(62,207,142,0.09)',
+            border: '1px solid rgba(62,207,142,0.25)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 14, flexShrink: 0,
+          }}>🔔</div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#3ecf8e' }}>
+              빈자리가 생겼어요!
+            </div>
+            <div style={{ fontSize: 11.5, color: '#a0a0aa', marginTop: 1 }}>
+              지금 바로 수강신청 가능해요
             </div>
           </div>
+        </div>
 
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: '#202025', border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: 10, padding: '9px 12px', marginBottom: 12,
-          }}>
-            <span style={{ fontSize: 13, fontWeight: 500 }}>{alert.name}</span>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-2)' }}>
-              {alert.day} {alert.period} · {alert.code}
-            </span>
-          </div>
+        {/* 과목 태그 */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: '#202025',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: 10, padding: '9px 12px', marginBottom: 14,
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#f0f0f2' }}>
+            {alert.name}
+          </span>
+          <span style={{ fontSize: 11, color: '#606068' }}>
+            {alert.day} {alert.period} · {alert.code}
+          </span>
+        </div>
 
-          <div style={{ display: 'flex', gap: 7 }}>
-            <button onClick={() => { window.open('https://학교수강신청URL', '_blank'); onClose(); }} style={{
-              flex: 1, height: 32, borderRadius: 10, border: 'none',
-              background: 'var(--green)', color: '#0c0c0e',
-              fontSize: 12, fontWeight: 600, fontFamily: 'var(--sans)', cursor: 'pointer',
-            }}>
-              수강신청 바로가기
-            </button>
-            <button onClick={onClose} style={{
-              height: 32, padding: '0 14px', borderRadius: 10,
-              border: '1px solid rgba(255,255,255,0.06)', background:'#202025',
-              color: '#a0a0aa', fontSize: 12, fontFamily: 'var(--sans)', cursor: 'pointer',
-            }}>
-              닫기
-            </button>
-          </div>
+        {/* 버튼 */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => {
+              window.open('https://학교수강신청URL', '_blank');
+              onClose();
+            }}
+            style={{
+              flex: 1,
+              height: isMobile ? 44 : 32,
+              borderRadius: 10, border: 'none',
+              background: '#3ecf8e', color: '#0c0c0e',
+              fontSize: 13, fontWeight: 600,
+              fontFamily: 'inherit', cursor: 'pointer',
+            }}
+          >
+            수강신청 바로가기
+          </button>
+          <button
+            onClick={onClose}
+            style={{
+              height: isMobile ? 44 : 32,
+              padding: '0 16px', borderRadius: 10,
+              border: '1px solid rgba(255,255,255,0.06)',
+              background: '#202025', color: '#a0a0aa',
+              fontSize: 13, fontFamily: 'inherit', cursor: 'pointer',
+            }}
+          >
+            닫기
+          </button>
+        </div>
 
-          <div style={{ height: 2, background: '#28282f', borderRadius: 99, marginTop: 12, overflow: 'hidden' }}>
-            <div ref={fillRef} style={{
-              height: '100%', background: 'var(--green)', borderRadius: 99, width: '100%',
-            }} />
-          </div>
+        {/* 타이머 바 */}
+        <div style={{
+          height: 2, background: '#28282f',
+          borderRadius: 99, marginTop: 14, overflow: 'hidden',
+        }}>
+          <div ref={fillRef} style={{
+            height: '100%', background: '#3ecf8e',
+            borderRadius: 99, width: '100%',
+          }} />
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 600px) {
-          :root {
-            --popup-top: auto;
-            --popup-right: 0;
-            --popup-left: 0;
-            --popup-bottom: 0;
-            --popup-width: 100%;
-          }
-        }
-        @keyframes popupIn {
-          from { opacity:0; transform:translateY(-12px) scale(0.96); }
-          to   { opacity:1; transform:translateY(0) scale(1); }
-        }
-        @media (max-width: 600px) {
-          @keyframes popupIn {
-            from { opacity:0; transform:translateY(100%); }
-            to   { opacity:1; transform:translateY(0); }
-          }
-        }
-        @keyframes iconPop {
-          from { transform:scale(0) rotate(-15deg); }
-          to   { transform:scale(1) rotate(0deg); }
-        }
-      `}</style>
-    </>
+    </div>
   );
 }
