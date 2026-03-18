@@ -62,17 +62,27 @@ export function useAlertStore() {
   }, []);
 
   const register = useCallback((code: string, name: string, day: string, period: string) => {
-    const item: AlertItem = {
-      id: ++_alertId, code, name, day, period,
-      status: 'monitoring', current: 40, max: 40, checks: 0, regTime: ts()
-    };
-    setAlerts(prev => {
-      const next = [item, ...prev];
-      startTicker(next);
-      return next;
-    });
-    pushLog(`[${code}] ${name} — 모니터링 시작`, 'ok');
-  }, [pushLog, startTicker]);
+  // 같은 과목코드 + 요일 + 교시 조합이 이미 있으면 등록 안 함
+  const isDuplicate = alerts.some(
+    a => a.code === code && a.day === day && a.period === period
+  );
+
+  if (isDuplicate) {
+    pushLog(`[${code}] 이미 등록된 알림이에요`, 'err');
+    return;
+  }
+
+  const item: AlertItem = {
+    id: ++_alertId, code, name, day, period,
+    status: 'monitoring', current: 40, max: 40, checks: 0, regTime: ts()
+  };
+  setAlerts(prev => {
+    const next = [item, ...prev];
+    startTicker(next);
+    return next;
+  });
+  pushLog(`[${code}] ${name} — 모니터링 시작`, 'ok');
+}, [alerts, pushLog, startTicker]);
 
   const togglePause = useCallback((id: number) => {
     setAlerts(prev => {

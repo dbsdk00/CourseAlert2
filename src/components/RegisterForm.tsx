@@ -30,11 +30,11 @@ const selectStyle: React.CSSProperties = {
 };
 
 export default function RegisterForm({ onRegister }: Props) {
-  const [code, setCode] = useState('CS101');
-  const [name, setName] = useState('컴퓨터공학개론');
+  const [code, setCode] = useState('');
+  const [name, setName] = useState('');
   const [day, setDay] = useState('월');
   const [periodFrom, setPeriodFrom] = useState('1');
-  const [periodTo, setPeriodTo] = useState('3');
+  const [periodTo, setPeriodTo] = useState('1');
 
   const handleSubmit = () => {
     if (!code.trim() || !name.trim()) return;
@@ -64,7 +64,7 @@ export default function RegisterForm({ onRegister }: Props) {
           <label className="field">
             <span className="field-label">과목 코드</span>
             <input style={inputStyle} value={code}
-              onChange={e => setCode(e.target.value)} placeholder="01690" />
+              onChange={e => setCode(e.target.value)} placeholder="00000" />
           </label>
 
           {/* 과목명 */}

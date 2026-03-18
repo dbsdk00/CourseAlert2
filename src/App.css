@@ -1,4 +1,3 @@
-/* 전체 삭제 후 빈 파일로 두거나 아래만 */
 .ambient {
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background:
@@ -11,4 +10,12 @@
   max-width: 780px;
   margin: 0 auto;
   padding: 0 20px 100px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .shell {
+    padding: 0 16px 100px;
+  }
 }
