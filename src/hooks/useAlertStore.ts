@@ -1,5 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { AlertItem, AlertStatus } from '../types';
+import type { RegisterParams } from '../components/RegisterForm';
 
 function ts() {
   const n = new Date();
@@ -7,53 +8,111 @@ function ts() {
     .map(v => String(v).padStart(2, '0')).join(':');
 }
 
-export interface LogEntry {
-  id: number;
-  time: string;
-  msg: string;
-  type: 'normal' | 'ok' | 'hit' | 'err';
-}
-
 let _alertId = 0;
-let _logId = 0;
+
+const API = import.meta.env.VITE_API_URL as string;
+const POLL_INTERVAL = 3000; // 3초마다 폴링
 
 export function useAlertStore() {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
-  const [logs, setLogs] = useState<LogEntry[]>([{
-    id: _logId++, time: '--:--:--',
-    msg: '알림을 등록하면 모니터링이 시작됩니다', type: 'normal'
-  }]);
-  const [checkCount, setCheckCount] = useState(0);
+  const [serverOk, setServerOk] = useState<boolean | null>(null); // null=확인중, true=연결됨, false=실패
   const [hitCount, setHitCount] = useState(0);
 
   const tickerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // 팝업 콜백 저장용
+  const onVacancyRef = useRef<((item: AlertItem) => void) | null>(null);
 
-  const pushLog = useCallback((msg: string, type: LogEntry['type'] = 'normal') => {
-    setLogs(prev => [{ id: _logId++, time: ts(), msg, type }, ...prev].slice(0, 50));
+  // 서버 연결 상태 주기적 확인
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await fetch(`${API}/health`);
+        setServerOk(res.ok);
+      } catch {
+        setServerOk(false);
+      }
+    };
+    check();
+    const id = setInterval(check, 5000);
+    return () => clearInterval(id);
   }, []);
 
-  const startTicker = useCallback((_currentAlerts: AlertItem[]) => {
+  // 실제 폴링: 모니터링 중인 알림들을 서버에서 체크
+  const startTicker = useCallback(() => {
     if (tickerRef.current) return;
-    tickerRef.current = setInterval(() => {
+    tickerRef.current = setInterval(async () => {
       setAlerts(prev => {
         const monitoring = prev.filter(a => a.status === 'monitoring');
         if (monitoring.length === 0) return prev;
 
-        const updated = prev.map(a =>
-          a.status === 'monitoring' ? { ...a, checks: a.checks + 1 } : a
-        );
-        setCheckCount(c => {
-          const next = c + monitoring.length;
-          if (next % 2 === 0) {
-            const a = monitoring[Math.floor(Math.random() * monitoring.length)];
-            pushLog(`[${a.code}] 확인 — ${a.current}/${a.max} 마감`, 'normal');
+        // 각 알림에 대해 서버 데이터 fetch (비동기를 setAlerts 밖에서 처리)
+        monitoring.forEach(async (alert) => {
+          try {
+            let url = '';
+            if (alert.code !== 'TIME') {
+              // 모드 A: 특정 과목
+              url = `${API}/api/courses/${alert.code}`;
+            } else {
+              // 모드 B: 시간대 — period에서 요일/교시 파싱
+              url = `${API}/api/courses?day=${alert.day}`;
+            }
+
+            const res = await fetch(url);
+            if (!res.ok) return;
+
+            if (alert.code !== 'TIME') {
+              // 단일 과목
+              const course = await res.json();
+              if (course.remain > 0) {
+                // 빈자리 발생!
+                const triggered: AlertItem = {
+                  ...alert,
+                  current: course.enrolled,
+                  max: course.limit,
+                  status: 'triggered',
+                };
+                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? triggered : a));
+                setHitCount(h => h + 1);
+                onVacancyRef.current?.(triggered);
+              } else {
+                // 현원 업데이트만
+                setAlerts(prev2 => prev2.map(a =>
+                  a.id === alert.id
+                    ? { ...a, current: course.enrolled, max: course.limit, checks: a.checks + 1 }
+                    : a
+                ));
+              }
+            } else {
+              // 시간대 모드: 해당 요일 전체 조회 후 교시 범위 매칭
+              const all = await res.json();
+              const [pFrom, pTo] = alert.period.replace('교시', '').split('-').map(Number);
+              const matched = all.filter((c: any) => {
+                const [from, to] = c.time.includes('-')
+                  ? c.time.split('-').map(Number)
+                  : [Number(c.time), Number(c.time)];
+                return from <= pTo && to >= pFrom && c.remain > 0;
+              });
+
+              if (matched.length > 0) {
+                const triggered: AlertItem = { ...alert, status: 'triggered' };
+                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? triggered : a));
+                setHitCount(h => h + 1);
+                onVacancyRef.current?.(triggered);
+              } else {
+                setAlerts(prev2 => prev2.map(a =>
+                  a.id === alert.id ? { ...a, checks: a.checks + 1 } : a
+                ));
+              }
+            }
+          } catch {
+            // 서버 일시 오류는 무시하고 다음 폴링에서 재시도
           }
-          return next;
         });
-        return updated;
+
+        return prev; // setAlerts는 위 forEach 안에서 처리
       });
-    }, 1800);
-  }, [pushLog]);
+    }, POLL_INTERVAL);
+  }, []);
 
   const stopTickerIfEmpty = useCallback((nextAlerts: AlertItem[]) => {
     if (nextAlerts.filter(a => a.status === 'monitoring').length === 0) {
@@ -61,92 +120,76 @@ export function useAlertStore() {
     }
   }, []);
 
-  const register = useCallback((code: string, name: string, day: string, period: string) => {
-  // 같은 과목코드 + 요일 + 교시 조합이 이미 있으면 등록 안 함
-  const isDuplicate = alerts.some(
-    a => a.code === code && a.day === day && a.period === period
-  );
+  // 팝업 콜백 등록 (App.tsx에서 호출)
+  const setOnVacancy = useCallback((cb: (item: AlertItem) => void) => {
+    onVacancyRef.current = cb;
+  }, []);
 
-  if (isDuplicate) {
-    pushLog(`[${code}] 이미 등록된 알림이에요`, 'err');
-    return;
-  }
+  const register = useCallback(({ mode, code, division, day, timeFrom, timeTo, name, enrolled, limit }: RegisterParams) => {
+    if (mode === 'course') {
+      const courseId = `${code}-${division}`;
+      if (alerts.some(a => a.code === courseId)) return;
 
-  const item: AlertItem = {
-    id: ++_alertId, code, name, day, period,
-    status: 'monitoring', current: 40, max: 40, checks: 0, regTime: ts()
-  };
-  setAlerts(prev => {
-    const next = [item, ...prev];
-    startTicker(next);
-    return next;
-  });
-  pushLog(`[${code}] ${name} — 모니터링 시작`, 'ok');
-}, [alerts, pushLog, startTicker]);
+      const item: AlertItem = {
+        id: ++_alertId,
+        code: courseId, name,
+        day: day ?? '', period: `${timeFrom}-${timeTo}교시`,
+        status: 'monitoring',
+        current: enrolled, max: limit,
+        checks: 0, regTime: ts(),
+      };
+      setAlerts(prev => { const next = [item, ...prev]; startTicker(); return next; });
+
+    } else {
+      const label = `${day}요일 ${timeFrom}-${timeTo}교시`;
+      if (alerts.some(a => a.day === day && a.period === `${timeFrom}-${timeTo}교시`)) return;
+
+      const item: AlertItem = {
+        id: ++_alertId,
+        code: 'TIME', name: label,
+        day: day!, period: `${timeFrom}-${timeTo}교시`,
+        status: 'monitoring',
+        current: enrolled, max: limit,
+        checks: 0, regTime: ts(),
+      };
+      setAlerts(prev => { const next = [item, ...prev]; startTicker(); return next; });
+    }
+  }, [alerts, startTicker]);
 
   const togglePause = useCallback((id: number) => {
     setAlerts(prev => {
       const next = prev.map(a => {
         if (a.id !== id) return a;
         const newStatus: AlertStatus = a.status === 'monitoring' ? 'idle' : 'monitoring';
-        pushLog(`[${a.code}] ${newStatus === 'idle' ? '모니터링 일시정지' : '모니터링 재개'}`, 'normal');
         return { ...a, status: newStatus };
       });
-      if (next.find(a => a.id === id)?.status === 'monitoring') startTicker(next);
+      if (next.find(a => a.id === id)?.status === 'monitoring') startTicker();
       stopTickerIfEmpty(next);
       return next;
     });
-  }, [pushLog, startTicker, stopTickerIfEmpty]);
+  }, [startTicker, stopTickerIfEmpty]);
 
   const remove = useCallback((id: number) => {
     setAlerts(prev => {
-      const a = prev.find(x => x.id === id);
-      if (a) pushLog(`[${a.code}] 알림 삭제됨`, 'normal');
       const next = prev.filter(x => x.id !== id);
       stopTickerIfEmpty(next);
       return next;
     });
-  }, [pushLog, stopTickerIfEmpty]);
-
-  const triggerVacancy = useCallback((): AlertItem | null => {
-  // setAlerts 밖에서 현재 alerts를 직접 읽어서 처리
-  const target = alerts.find(a => a.status === 'monitoring');
-  if (!target) return null;
-
-  const triggered: AlertItem = { ...target, current: 39, status: 'triggered' };
-
-  setAlerts(prev =>
-    prev.map(a => a.id === triggered.id ? triggered : a)
-  );
-
-  pushLog(`[${triggered.code}] ✓ 빈자리 감지! — 39/40`, 'hit');
-  pushLog(`[${triggered.code}] 알림 발송 → ${triggered.name} ${triggered.day}요일 ${triggered.period}`, 'ok');
-  setHitCount(h => h + 1);
-  setCheckCount(c => c + 1);
-  stopTickerIfEmpty([...alerts.filter(a => a.id !== triggered.id), triggered]);
-
-  return triggered;
-  }, [alerts, pushLog, stopTickerIfEmpty]);
+  }, [stopTickerIfEmpty]);
 
   const resetAll = useCallback(() => {
     if (tickerRef.current) { clearInterval(tickerRef.current); tickerRef.current = null; }
     setAlerts([]);
-    setCheckCount(0);
     setHitCount(0);
-    setLogs([{ id: _logId++, time: ts(), msg: '데모가 초기화되었습니다', type: 'normal' }]);
-  }, []);
-
-  const clearLogs = useCallback(() => {
-    setLogs([{ id: _logId++, time: ts(), msg: '로그가 초기화되었습니다', type: 'normal' }]);
   }, []);
 
   const monitoringCount = alerts.filter(a => a.status === 'monitoring').length;
   const hasMonitoring = monitoringCount > 0;
 
   return {
-    alerts, logs, checkCount, hitCount,
+    alerts, serverOk, hitCount,
     monitoringCount, hasMonitoring,
     register, togglePause, remove,
-    triggerVacancy, resetAll, clearLogs,
+    resetAll, setOnVacancy,
   };
 }

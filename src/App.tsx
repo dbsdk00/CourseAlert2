@@ -1,42 +1,39 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { useAlertStore } from './hooks/useAlertStore';
 import TopBar from './components/TopBar';
 import RegisterForm from './components/RegisterForm';
 import AlertList from './components/AlertList';
-import LogPanel from './components/LogPanel';
 import DemoBar from './components/DemoBar';
 import Popup from './components/Popup';
 import type { AlertItem } from './types';
+import { usePushNotification } from './hooks/usePushNotification';
 
 export default function App() {
+  usePushNotification();
   const store = useAlertStore();
   const [popupAlert, setPopupAlert] = useState<AlertItem | null>(null);
 
-  const handleTrigger = useCallback(() => {
-    const triggered = store.triggerVacancy();
-    if (triggered) setPopupAlert(triggered);
-  }, [store]);
+  useEffect(() => {
+    store.setOnVacancy((triggered: AlertItem) => {
+      setPopupAlert(triggered);
+    });
+  }, [store.setOnVacancy]);
 
   return (
     <>
       <div className="ambient" />
       <Popup alert={popupAlert} onClose={() => setPopupAlert(null)} />
       <div className="shell">
-        <TopBar monitoringCount={store.monitoringCount} />
+        <TopBar monitoringCount={store.monitoringCount} serverOk={store.serverOk} />
         <RegisterForm onRegister={store.register} />
         <AlertList
           alerts={store.alerts}
           onTogglePause={store.togglePause}
           onDelete={store.remove}
         />
-        <LogPanel logs={store.logs} onClear={store.clearLogs} />
       </div>
-      <DemoBar
-        hasMonitoring={store.hasMonitoring}
-        onTrigger={handleTrigger}
-        onReset={store.resetAll}
-      />
+      <DemoBar onReset={store.resetAll} />
     </>
   );
 }

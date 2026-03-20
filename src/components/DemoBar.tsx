@@ -1,10 +1,8 @@
 interface Props {
-  hasMonitoring: boolean;
-  onTrigger: () => void;
   onReset: () => void;
 }
 
-export default function DemoBar({ hasMonitoring, onTrigger, onReset }: Props) {
+export default function DemoBar({ onReset }: Props) {
   return (
     <div style={{
       position: 'fixed', bottom: 24, left: '50%',
@@ -21,20 +19,6 @@ export default function DemoBar({ hasMonitoring, onTrigger, onReset }: Props) {
       <span style={{ fontSize: 12, color: 'var(--text-2)', fontFamily: 'var(--mono)' }}>
         demo
       </span>
-      <button
-        onClick={onTrigger}
-        disabled={!hasMonitoring}
-        style={{
-          height: 34, padding: '0 16px', borderRadius: 99,
-          border: '1px solid var(--green-brd)', background: 'var(--green-dim)',
-          color: 'var(--green)', fontSize: 12, fontWeight: 500,
-          fontFamily: 'var(--sans)', cursor: hasMonitoring ? 'pointer' : 'not-allowed',
-          opacity: hasMonitoring ? 1 : 0.4, transition: 'all 0.2s',
-          display: 'flex', alignItems: 'center', gap: 6,
-        }}
-      >
-        ◎ 빈자리 발생 시뮬레이션
-      </button>
       <button
         onClick={onReset}
         style={{

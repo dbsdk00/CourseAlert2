@@ -114,7 +114,7 @@ export default function Popup({ alert, onClose }: Props) {
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={() => {
-              window.open('https://학교수강신청URL', '_blank');
+              window.open('https://sugang.sungkyul.ac.kr/login/Login.jsp', '_blank');
               onClose();
             }}
             style={{
