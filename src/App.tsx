@@ -7,10 +7,8 @@ import AlertList from './components/AlertList';
 import DemoBar from './components/DemoBar';
 import Popup from './components/Popup';
 import type { AlertItem } from './types';
-import { usePushNotification } from './hooks/usePushNotification';
 
 export default function App() {
-  usePushNotification();
   const store = useAlertStore();
   const [popupAlert, setPopupAlert] = useState<AlertItem | null>(null);
 

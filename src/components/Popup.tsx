@@ -13,15 +13,29 @@ export default function Popup({ alert, onClose }: Props) {
   useEffect(() => {
     if (!alert) return;
 
-    const sendNotification = () => {
+    const sendNotification = async () => {
       try {
-        new Notification('🔔 빈자리가 생겼어요!', {
-          body: `${alert.name} · ${alert.day}요일 ${alert.period} (${alert.code})`,
+        // Service Worker가 등록되어 있으면 SW를 통해 알림 (백그라운드에서도 동작)
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification('🔔 빈자리가 생겼어요!', {
+          body: `${alert.name} · ${alert.day}요일 ${alert.period} (${alert.code})\n지금 바로 수강신청 가능해요`,
           icon: '/icons/icon-192.png',
+          badge: '/icons/icon-192.png',
           tag: `course-${alert.code}`,
+          requireInteraction: true,
+          data: { url: 'https://sugang.sungkyul.ac.kr/login/Login.jsp' },
         });
       } catch (e) {
-        console.log('notification error', e);
+        // SW 없으면 일반 Notification으로 폴백
+        try {
+          new Notification('🔔 빈자리가 생겼어요!', {
+            body: `${alert.name} · ${alert.day}요일 ${alert.period} (${alert.code})`,
+            icon: '/icons/icon-192.png',
+            tag: `course-${alert.code}`,
+          });
+        } catch (e2) {
+          console.log('notification error', e2);
+        }
       }
     };
 
