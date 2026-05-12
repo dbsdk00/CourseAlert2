@@ -8,7 +8,7 @@ interface Props {
   timeFrom: string; setTimeFrom: (v: string) => void;
   timeTo: string; setTimeTo: (v: string) => void;
   onSearch: () => void;
-  searchState: 'idle' | 'loading' | 'done' | 'empty' | 'error';
+  searchState: 'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate';
   resetSearch: (m: RegisterMode) => void;
   onInputChanged: () => void;
 }

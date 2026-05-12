@@ -40,7 +40,6 @@ export default function App() {
         <AlertList
           alerts={store.alerts}
           logs={store.logs}
-          onTogglePause={store.togglePause}
           onDelete={store.remove}
         />
       </div>

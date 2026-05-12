@@ -4,7 +4,7 @@ import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
 
 interface Props {
-  onRegister: (params: RegisterParams) => void;
+  onRegister: (params: RegisterParams) => boolean;
 }
 
 export default function RegisterForm({ onRegister }: Props) {

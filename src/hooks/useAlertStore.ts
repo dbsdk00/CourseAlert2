@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { AlertItem, AlertStatus, VacancyLog } from '../types';
+import type { AlertItem, VacancyLog } from '../types';
 import type { RegisterParams } from '../types';
 
 function ts() {
