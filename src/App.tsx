@@ -10,23 +10,36 @@ import type { AlertItem } from './types';
 
 export default function App() {
   const store = useAlertStore();
-  const [popupAlert, setPopupAlert] = useState<AlertItem | null>(null);
+  const [popupAlerts, setPopupAlerts] = useState<AlertItem[]>([]); // ← 배열로 변경
 
   useEffect(() => {
     store.setOnVacancy((triggered: AlertItem) => {
-      setPopupAlert(triggered);
+      setPopupAlerts(prev => [...prev, triggered]); // ← 스택에 추가
     });
   }, [store.setOnVacancy]);
+
+  const handleClose = (id: number) => {
+    setPopupAlerts(prev => prev.filter(a => a.id !== id)); // ← 개별 닫기
+  };
 
   return (
     <>
       <div className="ambient" />
-      <Popup alert={popupAlert} onClose={() => setPopupAlert(null)} />
+      {/* ← 스택으로 렌더링 */}
+      {popupAlerts.map((alert, index) => (
+        <Popup
+          key={alert.id}
+          alert={alert}
+          index={index}
+          onClose={() => handleClose(alert.id)}
+        />
+      ))}
       <div className="shell">
         <TopBar monitoringCount={store.monitoringCount} serverOk={store.serverOk} />
         <RegisterForm onRegister={store.register} />
         <AlertList
           alerts={store.alerts}
+          logs={store.logs}
           onTogglePause={store.togglePause}
           onDelete={store.remove}
         />

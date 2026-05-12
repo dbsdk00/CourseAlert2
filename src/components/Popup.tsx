@@ -1,53 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AlertItem } from '../types';
 
 interface Props {
   alert: AlertItem | null;
+  index: number;
   onClose: () => void;
 }
 
-export default function Popup({ alert, onClose }: Props) {
+export default function Popup({ alert, index, onClose }: Props) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fillRef = useRef<HTMLDivElement>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(onClose, 400); // 애니메이션 시간만큼 대기 후 실제 제거
+  };
 
   useEffect(() => {
     if (!alert) return;
-
-    const sendNotification = async () => {
-      try {
-        // Service Worker가 등록되어 있으면 SW를 통해 알림 (백그라운드에서도 동작)
-        const registration = await navigator.serviceWorker.ready;
-        await registration.showNotification('🔔 빈자리가 생겼어요!', {
-          body: `${alert.name} · ${alert.day}요일 ${alert.period} (${alert.code})\n지금 바로 수강신청 가능해요`,
-          icon: '/icons/icon-192.png',
-          badge: '/icons/icon-192.png',
-          tag: `course-${alert.code}`,
-          requireInteraction: true,
-          data: { url: 'https://sugang.sungkyul.ac.kr/login/Login.jsp' },
-        });
-      } catch (e) {
-        // SW 없으면 일반 Notification으로 폴백
-        try {
-          new Notification('🔔 빈자리가 생겼어요!', {
-            body: `${alert.name} · ${alert.day}요일 ${alert.period} (${alert.code})`,
-            icon: '/icons/icon-192.png',
-            tag: `course-${alert.code}`,
-          });
-        } catch (e2) {
-          console.log('notification error', e2);
-        }
-      }
-    };
-
-    if (typeof Notification !== 'undefined') {
-      if (Notification.permission === 'granted') {
-        sendNotification();
-      } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(p => {
-          if (p === 'granted') sendNotification();
-        });
-      }
-    }
 
     if (fillRef.current) {
       fillRef.current.style.transition = 'none';
@@ -62,111 +33,120 @@ export default function Popup({ alert, onClose }: Props) {
       });
     }
 
-    timerRef.current = setTimeout(onClose, 7200);
+    timerRef.current = setTimeout(handleClose, 7000);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [alert, onClose]);
+  }, [alert]);
 
   if (!alert) return null;
 
   const isMobile = window.innerWidth <= 600;
+  // 작아진 알림 크기에 맞춰 오프셋 조정 (약 90px)
+  const offset = index * 90;
+
+  const animName = isClosing 
+    ? (isMobile ? 'slideDownFadeOut' : 'slideOutRight')
+    : (isMobile ? 'slideUpFade' : 'slideInRight');
 
   return (
     <div style={{
       position: 'fixed',
-      // 모바일: 하단 / 데스크탑: 우상단
       ...(isMobile
-        ? { bottom: 0, left: 0, right: 0, top: 'auto' }
-        : { top: 22, right: 22, left: 'auto', bottom: 'auto', width: 300 }
+        ? { bottom: 24 + offset, left: 16, right: 16, top: 'auto' }
+        : { top: 24 + offset, right: 24, left: 'auto', bottom: 'auto', width: 340 }
       ),
-      zIndex: 9999,
+      zIndex: 9999 + index,
+      animation: `${animName} 0.4s cubic-bezier(0.2,0.8,0.2,1) forwards`,
     }}>
-      <div style={{
-        margin: isMobile ? '0' : '0',
-        background: '#18181c',
-        border: '1px solid rgba(62,207,142,0.25)',
-        borderRadius: isMobile ? '22px 22px 0 0' : '22px',
-        padding: '20px 18px',
-        boxShadow: '0 -8px 40px rgba(0,0,0,0.5)',
-      }}>
-        {/* 헤더 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: 'rgba(62,207,142,0.09)',
-            border: '1px solid rgba(62,207,142,0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 14, flexShrink: 0,
-          }}>🔔</div>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#3ecf8e' }}>
-              빈자리가 생겼어요!
-            </div>
-            <div style={{ fontSize: 11.5, color: '#a0a0aa', marginTop: 1 }}>
-              지금 바로 수강신청 가능해요
-            </div>
+      <div 
+        onClick={() => {
+          window.open('https://sugang.sungkyul.ac.kr/login/Login.jsp', '_blank');
+          handleClose();
+        }}
+        style={{
+        margin: '0',
+        background: 'rgba(20, 24, 30, 0.95)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid var(--green-brd)',
+        borderRadius: '16px',
+        padding: '16px 20px',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 0 16px rgba(52, 211, 153, 0.15)',
+        display: 'flex', alignItems: 'center', gap: 16,
+        cursor: 'pointer',
+        position: 'relative',
+        overflow: 'hidden'
+      }} className="toast-panel">
+        
+        {/* 좌측 아이콘 */}
+        <div style={{
+          width: 36, height: 36, borderRadius: '50%',
+          background: 'var(--green-dim)',
+          border: '1px solid var(--green-brd)',
+          boxShadow: '0 0 12px var(--green-dim)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 16, flexShrink: 0,
+        }}>🚨</div>
+        
+        {/* 중간 내용 */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--green)' }}>
+            {alert.name} 빈자리!
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text-1)' }}>
+            {alert.day} {alert.period} · <span style={{ fontFamily: 'var(--mono)' }}>{alert.code}</span>
           </div>
         </div>
 
-        {/* 과목 태그 */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: '#202025',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: 10, padding: '9px 12px', marginBottom: 14,
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#f0f0f2' }}>
-            {alert.name}
-          </span>
-          <span style={{ fontSize: 11, color: '#606068' }}>
-            {alert.day} {alert.period} · {alert.code}
-          </span>
-        </div>
+        {/* 우측 버튼 */}
+        <button
+          style={{
+            padding: '8px 14px', borderRadius: 8, border: 'none',
+            background: 'var(--green)', color: '#060913',
+            fontSize: 13, fontWeight: 700, cursor: 'pointer',
+            transition: 'transform 0.2s', flexShrink: 0
+          }}
+          className="btn-toast"
+        >
+          신청
+        </button>
 
-        {/* 버튼 */}
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            onClick={() => {
-              window.open('https://sugang.sungkyul.ac.kr/login/Login.jsp', '_blank');
-              onClose();
-            }}
-            style={{
-              flex: 1,
-              height: isMobile ? 44 : 32,
-              borderRadius: 10, border: 'none',
-              background: '#3ecf8e', color: '#0c0c0e',
-              fontSize: 13, fontWeight: 600,
-              fontFamily: 'inherit', cursor: 'pointer',
-            }}
-          >
-            수강신청 바로가기
-          </button>
-          <button
-            onClick={onClose}
-            style={{
-              height: isMobile ? 44 : 32,
-              padding: '0 16px', borderRadius: 10,
-              border: '1px solid rgba(255,255,255,0.06)',
-              background: '#202025', color: '#a0a0aa',
-              fontSize: 13, fontFamily: 'inherit', cursor: 'pointer',
-            }}
-          >
-            닫기
-          </button>
-        </div>
-
-        {/* 타이머 바 */}
+        {/* 하단 타이머 바 */}
         <div style={{
-          height: 2, background: '#28282f',
-          borderRadius: 99, marginTop: 14, overflow: 'hidden',
+          position: 'absolute', bottom: 0, left: 0, height: 3, 
+          background: 'var(--bg-3)', width: '100%'
         }}>
           <div ref={fillRef} style={{
-            height: '100%', background: '#3ecf8e',
-            borderRadius: 99, width: '100%',
+            height: '100%', background: 'var(--green)', width: '100%',
+            boxShadow: '0 0 8px var(--green)'
           }} />
         </div>
       </div>
+      <style>{`
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(30px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOutRight {
+          from { opacity: 1; transform: translateX(0); }
+          to { opacity: 0; transform: translateX(30px); }
+        }
+        @keyframes slideUpFade {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDownFadeOut {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(20px); }
+        }
+        .toast-panel:hover {
+          background: rgba(25, 30, 38, 0.98) !important;
+          border-color: rgba(52, 211, 153, 0.6) !important;
+        }
+        .btn-toast:hover { transform: scale(1.05); }
+        .btn-toast:active { transform: scale(0.95); }
+      `}</style>
     </div>
   );
 }

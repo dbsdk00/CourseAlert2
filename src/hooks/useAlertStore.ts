@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { AlertItem, AlertStatus } from '../types';
-import type { RegisterParams } from '../components/RegisterForm';
+import type { AlertItem, AlertStatus, VacancyLog } from '../types';
+import type { RegisterParams } from '../types';
 
 function ts() {
   const n = new Date();
@@ -8,21 +8,42 @@ function ts() {
     .map(v => String(v).padStart(2, '0')).join(':');
 }
 
-let _alertId = 0;
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
 const API = import.meta.env.VITE_API_URL as string;
-const POLL_INTERVAL = 3000; // 3초마다 폴링
+const POLL_INTERVAL = 3000;
 
 export function useAlertStore() {
-  const [alerts, setAlerts] = useState<AlertItem[]>([]);
-  const [serverOk, setServerOk] = useState<boolean | null>(null); // null=확인중, true=연결됨, false=실패
-  const [hitCount, setHitCount] = useState(0);
-
+  const alertIdRef = useRef(0);
+  const logIdRef = useRef(0);
+  const triggeredIdsRef = useRef<Set<number>>(new Set());
   const tickerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  // 팝업 콜백 저장용
   const onVacancyRef = useRef<((item: AlertItem) => void) | null>(null);
+  const pushSubRef = useRef<PushSubscription | null>(null);
 
-  // 서버 연결 상태 주기적 확인
+  const [alerts, setAlerts] = useState<AlertItem[]>(() => {
+    try { const saved = localStorage.getItem('courseAlerts'); return saved ? JSON.parse(saved) : []; } catch { return []; }
+  });
+  const [logs, setLogs] = useState<VacancyLog[]>(() => {
+    try { const saved = localStorage.getItem('courseLogs'); return saved ? JSON.parse(saved) : []; } catch { return []; }
+  });
+  const [serverOk, setServerOk] = useState<boolean | null>(null);
+  const [hitCount, setHitCount] = useState<number>(() => {
+    try { const saved = localStorage.getItem('courseHitCount'); return saved ? Number(saved) : 0; } catch { return 0; }
+  });
+
+  // 서버 헬스체크
   useEffect(() => {
     const check = async () => {
       try {
@@ -37,90 +58,132 @@ export function useAlertStore() {
     return () => clearInterval(id);
   }, []);
 
-  // 실제 폴링: 모니터링 중인 알림들을 서버에서 체크
+  // Web Push 초기화 및 구독
+  useEffect(() => {
+    async function initPush() {
+      try {
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+          const registration = await navigator.serviceWorker.register('/sw.js');
+          let sub = await registration.pushManager.getSubscription();
+          
+          if (!sub) {
+            const res = await fetch(`${API}/api/vapidPublicKey`);
+            if (res.ok) {
+              const { publicKey } = await res.json();
+              if (publicKey) {
+                sub = await registration.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: urlBase64ToUint8Array(publicKey)
+                });
+              }
+            }
+          }
+          pushSubRef.current = sub;
+          syncBackend(); // 초기 로드 시 백엔드와 동기화
+        }
+      } catch (err) {
+        console.error('Push setup failed:', err);
+      }
+    }
+    initPush();
+  }, []);
+
+  // 백엔드에 구독 정보 및 모니터링 과목 목록 전송
+  const syncBackend = useCallback(async () => {
+    if (pushSubRef.current) {
+      const courses = alerts.map(a => a.code).filter(c => c !== 'TIME');
+      try {
+        await fetch(`${API}/api/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subscription: pushSubRef.current,
+            courses
+          })
+        });
+      } catch (err) {
+        console.error('Failed to sync subscriptions to backend', err);
+      }
+    }
+  }, [alerts]);
+
+  // 알림 목록이 바뀔 때마다 백엔드 동기화
+  useEffect(() => {
+    if (pushSubRef.current) {
+      syncBackend();
+    }
+  }, [alerts, syncBackend]);
+
   const startTicker = useCallback(() => {
     if (tickerRef.current) return;
-    tickerRef.current = setInterval(async () => {
+    tickerRef.current = setInterval(() => {
       setAlerts(prev => {
-        const monitoring = prev.filter(a => a.status === 'monitoring');
-        if (monitoring.length === 0) return prev;
+        if (prev.length === 0) return prev;
 
-        // 각 알림에 대해 서버 데이터 fetch (비동기를 setAlerts 밖에서 처리)
-        monitoring.forEach(async (alert) => {
+        prev.forEach(async (alert) => {
           try {
-            let url = '';
-            if (alert.code !== 'TIME') {
-              // 모드 A: 특정 과목
-              url = `${API}/api/courses/${alert.code}`;
-            } else {
-              // 모드 B: 시간대 — period에서 요일/교시 파싱
-              url = `${API}/api/courses?day=${alert.day}`;
-            }
+            const url = alert.code !== 'TIME'
+              ? `${API}/api/courses/${alert.code}`
+              : `${API}/api/courses?day=${alert.day}`;
 
             const res = await fetch(url);
             if (!res.ok) return;
 
             if (alert.code !== 'TIME') {
-              // 단일 과목
               const course = await res.json();
               if (course.remain > 0) {
-                // 빈자리 발생!
-                const triggered: AlertItem = {
-                  ...alert,
-                  current: course.enrolled,
-                  max: course.limit,
-                  status: 'triggered',
-                };
+                if (triggeredIdsRef.current.has(alert.id)) {
+                  setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, current: course.enrolled, max: course.limit, checks: a.checks + 1, lastChecked: ts() } : a));
+                  return;
+                }
+                triggeredIdsRef.current.add(alert.id);
+                const triggered: AlertItem = { ...alert, current: course.enrolled, max: course.limit, status: 'triggered', checks: alert.checks + 1, lastChecked: ts() };
                 setAlerts(prev2 => prev2.map(a => a.id === alert.id ? triggered : a));
                 setHitCount(h => h + 1);
+                setLogs(prev2 => [{ id: ++logIdRef.current, courseId: alert.code, courseName: alert.name, triggeredAt: ts() }, ...prev2]);
                 onVacancyRef.current?.(triggered);
               } else {
-                // 현원 업데이트만
-                setAlerts(prev2 => prev2.map(a =>
-                  a.id === alert.id
-                    ? { ...a, current: course.enrolled, max: course.limit, checks: a.checks + 1 }
-                    : a
-                ));
+                triggeredIdsRef.current.delete(alert.id);
+                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, current: course.enrolled, max: course.limit, status: 'monitoring', checks: a.checks + 1, lastChecked: ts() } : a));
               }
             } else {
-              // 시간대 모드: 해당 요일 전체 조회 후 교시 범위 매칭
               const all = await res.json();
               const [pFrom, pTo] = alert.period.replace('교시', '').split('-').map(Number);
               const matched = all.filter((c: any) => {
-                const [from, to] = c.time.includes('-')
-                  ? c.time.split('-').map(Number)
-                  : [Number(c.time), Number(c.time)];
+                const [from, to] = c.time.includes('-') ? c.time.split('-').map(Number) : [Number(c.time), Number(c.time)];
                 return from <= pTo && to >= pFrom && c.remain > 0;
               });
 
               if (matched.length > 0) {
-                const triggered: AlertItem = { ...alert, status: 'triggered' };
+                if (triggeredIdsRef.current.has(alert.id)) {
+                  setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, checks: a.checks + 1, lastChecked: ts() } : a));
+                  return;
+                }
+                triggeredIdsRef.current.add(alert.id);
+                const triggered: AlertItem = { ...alert, status: 'triggered', checks: alert.checks + 1, lastChecked: ts() };
                 setAlerts(prev2 => prev2.map(a => a.id === alert.id ? triggered : a));
                 setHitCount(h => h + 1);
+                setLogs(prev2 => [{ id: ++logIdRef.current, courseId: alert.code, courseName: alert.name, triggeredAt: ts() }, ...prev2]);
                 onVacancyRef.current?.(triggered);
               } else {
-                setAlerts(prev2 => prev2.map(a =>
-                  a.id === alert.id ? { ...a, checks: a.checks + 1 } : a
-                ));
+                triggeredIdsRef.current.delete(alert.id);
+                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, status: 'monitoring', checks: a.checks + 1, lastChecked: ts() } : a));
               }
             }
-          } catch {
-            // 서버 일시 오류는 무시하고 다음 폴링에서 재시도
-          }
+          } catch {}
         });
 
-        return prev; // setAlerts는 위 forEach 안에서 처리
+        return prev;
       });
     }, POLL_INTERVAL);
   }, []);
 
   const stopTickerIfEmpty = useCallback((nextAlerts: AlertItem[]) => {
-    if (nextAlerts.filter(a => a.status === 'monitoring').length === 0) {
+    if (nextAlerts.length === 0) {
       if (tickerRef.current) { clearInterval(tickerRef.current); tickerRef.current = null; }
     }
   }, []);
 
-  // 팝업 콜백 등록 (App.tsx에서 호출)
   const setOnVacancy = useCallback((cb: (item: AlertItem) => void) => {
     onVacancyRef.current = cb;
   }, []);
@@ -128,46 +191,34 @@ export function useAlertStore() {
   const register = useCallback(({ mode, code, division, day, timeFrom, timeTo, name, enrolled, limit }: RegisterParams) => {
     if (mode === 'course') {
       const courseId = `${code}-${division}`;
-      if (alerts.some(a => a.code === courseId)) return;
-
+      if (alerts.some(a => a.code === courseId)) {
+        return false;
+      }
       const item: AlertItem = {
-        id: ++_alertId,
+        id: ++alertIdRef.current,
         code: courseId, name,
         day: day ?? '', period: `${timeFrom}-${timeTo}교시`,
         status: 'monitoring',
         current: enrolled, max: limit,
-        checks: 0, regTime: ts(),
+        checks: 0, regTime: ts(), lastChecked: '-',
       };
       setAlerts(prev => { const next = [item, ...prev]; startTicker(); return next; });
-
+      return true;
     } else {
       const label = `${day}요일 ${timeFrom}-${timeTo}교시`;
-      if (alerts.some(a => a.day === day && a.period === `${timeFrom}-${timeTo}교시`)) return;
-
+      if (alerts.some(a => a.day === day && a.period === `${timeFrom}-${timeTo}교시`)) return false;
       const item: AlertItem = {
-        id: ++_alertId,
+        id: ++alertIdRef.current,
         code: 'TIME', name: label,
         day: day!, period: `${timeFrom}-${timeTo}교시`,
         status: 'monitoring',
         current: enrolled, max: limit,
-        checks: 0, regTime: ts(),
+        checks: 0, regTime: ts(), lastChecked: '-',
       };
       setAlerts(prev => { const next = [item, ...prev]; startTicker(); return next; });
+      return true;
     }
   }, [alerts, startTicker]);
-
-  const togglePause = useCallback((id: number) => {
-    setAlerts(prev => {
-      const next = prev.map(a => {
-        if (a.id !== id) return a;
-        const newStatus: AlertStatus = a.status === 'monitoring' ? 'idle' : 'monitoring';
-        return { ...a, status: newStatus };
-      });
-      if (next.find(a => a.id === id)?.status === 'monitoring') startTicker();
-      stopTickerIfEmpty(next);
-      return next;
-    });
-  }, [startTicker, stopTickerIfEmpty]);
 
   const remove = useCallback((id: number) => {
     setAlerts(prev => {
@@ -179,17 +230,30 @@ export function useAlertStore() {
 
   const resetAll = useCallback(() => {
     if (tickerRef.current) { clearInterval(tickerRef.current); tickerRef.current = null; }
+    triggeredIdsRef.current.clear();
     setAlerts([]);
+    setLogs([]);
     setHitCount(0);
   }, []);
 
-  const monitoringCount = alerts.filter(a => a.status === 'monitoring').length;
-  const hasMonitoring = monitoringCount > 0;
+  useEffect(() => {
+    if (alerts.length > 0) alertIdRef.current = Math.max(...alerts.map(a => a.id));
+    if (logs.length > 0) logIdRef.current = Math.max(...logs.map(l => l.id));
+    if (alerts.length > 0) startTicker();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => { localStorage.setItem('courseAlerts', JSON.stringify(alerts)); }, [alerts]);
+  useEffect(() => { localStorage.setItem('courseLogs', JSON.stringify(logs)); }, [logs]);
+  useEffect(() => { localStorage.setItem('courseHitCount', hitCount.toString()); }, [hitCount]);
+
+  const monitoringCount = alerts.length;
+  const hasMonitoring = alerts.length > 0;
 
   return {
-    alerts, serverOk, hitCount,
+    alerts, logs, serverOk, hitCount,
     monitoringCount, hasMonitoring,
-    register, togglePause, remove,
+    register, remove,
     resetAll, setOnVacancy,
   };
 }
