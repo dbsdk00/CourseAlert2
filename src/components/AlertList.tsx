@@ -11,10 +11,7 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
   return (
     <>
       <div className="sec-label">
-        <span style={{ 
-          width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)',
-          boxShadow: '0 0 8px var(--accent-glow)'
-        }} />
+        <img src="/ling.png" style={{ width: 14, height: 14, opacity: 0.8 }} />
         등록된 알림
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16, marginBottom: 36 }}>
@@ -24,7 +21,7 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
             borderRadius: 24, padding: '48px 24px', textAlign: 'center',
             borderStyle: 'dashed', borderColor: 'var(--border-md)'
           }}>
-            <div style={{ fontSize: 36, marginBottom: 16, opacity: 0.8 }}>🛎️</div>
+            <img src="/ling.png" style={{ width: 40, height: 40, marginBottom: 16, opacity: 0.5 }} />
             <div style={{ fontSize: 14, color: 'var(--text-1)', lineHeight: 1.6 }}>
               아직 등록된 알림이 없어요<br />위 폼에서 과목을 검색하고 추가해보세요
             </div>
@@ -43,10 +40,7 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
       {logs.length > 0 && (
         <>
           <div className="sec-label">
-            <span style={{ 
-              width: 8, height: 8, borderRadius: '50%', background: 'var(--green)',
-              boxShadow: '0 0 8px var(--green-glow)'
-            }} />
+            <img src="/ling.png" style={{ width: 14, height: 14, opacity: 0.8 }} />
             빈자리 발생 기록
           </div>
           <div className="custom-scrollbar" style={{ 

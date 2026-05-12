@@ -201,12 +201,13 @@ export default function RegisterForm({ onRegister }: Props) {
           marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--glass-border)'
         }}>
           <span style={{ fontSize: 13, color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/ling.png" style={{ width: 14, height: 14, opacity: 0.7 }} />
             {selectedId ? (
-              <><span style={{ color: 'var(--accent)' }}>✨</span> 선택된 수업에 빈자리 발생 시 즉시 알림을 보내드려요</>
+              <>선택된 수업에 빈자리 발생 시 즉시 알림을 보내드려요</>
             ) : mode === 'course' ? (
-              <><span style={{ opacity: 0.6 }}>💡</span> 과목 코드와 분반을 입력하고 검색해주세요</>
+              <>과목 코드와 분반을 입력하고 검색해주세요</>
             ) : (
-              <><span style={{ opacity: 0.6 }}>💡</span> 요일과 교시를 선택하고 검색해주세요</>
+              <>요일과 교시를 선택하고 검색해주세요</>
             )}
           </span>
           <button className="btn-register" onClick={handleRegister} disabled={!selectedId}>
@@ -221,25 +222,22 @@ export default function RegisterForm({ onRegister }: Props) {
           justify-content: space-between; gap: 16px; flex-wrap: wrap;
         }
         .btn-register {
-          height: 44px; padding: 0 28px; border-radius: 12px;
-          border: 1px solid var(--accent-brd); background: var(--accent-dim);
-          color: var(--accent); font-size: 14px; font-weight: 700;
+          height: 40px; padding: 0 24px; border-radius: 10px;
+          border: 1px solid var(--glass-border); background: var(--glass-bg);
+          color: var(--accent); font-size: 14px; font-weight: 500;
           font-family: var(--sans); cursor: pointer;
           transition: all 0.2s; white-space: nowrap;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .btn-register:hover:not(:disabled) { 
-          background: rgba(56, 189, 248, 0.25);
-          box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
-          transform: translateY(-2px);
+          background: var(--bg-2);
+          border-color: var(--accent);
         }
-        .btn-register:active:not(:disabled) { transform: translateY(0); }
+        .btn-register:active:not(:disabled) { transform: translateY(1px); }
         .btn-register:disabled { 
-          opacity: 0.4; cursor: not-allowed; 
-          background: var(--bg-3); border-color: var(--border); color: var(--text-2);
-          box-shadow: none;
+          opacity: 0.3; cursor: not-allowed; 
+          background: transparent; border-color: var(--border); color: var(--text-2);
         }
-        @media (max-width: 600px) { .btn-register { width: 100%; } }
+        @media (max-width: 600px) { .btn-register { width: 100%; order: -1; } }
       `}</style>
     </>
   );

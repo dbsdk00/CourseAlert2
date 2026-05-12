@@ -10,17 +10,17 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
   const fillColor = pct >= 100 ? 'var(--red)' : pct >= 85 ? 'var(--amber)' : 'var(--green)';
   const capColor  = pct >= 100 ? 'var(--red)' : pct >= 85 ? 'var(--amber)' : 'var(--green)';
 
-  const borderColor = a.status === 'triggered' ? 'var(--green-glow)' : 'var(--glass-border)';
-  const shadow = a.status === 'triggered' ? '0 0 20px rgba(52, 211, 153, 0.2)' : '0 8px 32px rgba(0, 0, 0, 0.3)';
-  const bg = a.status === 'triggered' ? 'linear-gradient(135deg, var(--green-dim), var(--glass-bg))' : 'var(--glass-bg)';
-  const barColor = a.status === 'monitoring' ? 'var(--amber)' : a.status === 'triggered' ? 'var(--green)' : 'var(--text-3)';
+  const borderColor = a.status === 'triggered' ? 'var(--green-brd)' : 'var(--glass-border)';
+  const shadow = a.status === 'triggered' ? '0 4px 16px rgba(52, 211, 153, 0.1)' : '0 8px 32px rgba(0, 0, 0, 0.3)';
+  const bg = a.status === 'triggered' ? 'linear-gradient(135deg, rgba(52, 211, 153, 0.05), var(--glass-bg))' : 'var(--glass-bg)';
+  const barColor = a.status === 'monitoring' ? 'var(--text-3)' : a.status === 'triggered' ? 'var(--green)' : 'var(--text-3)';
 
   return (
     <div className="glass-panel alert-card" style={{
       background: bg,
       border: `1px solid ${borderColor}`,
-      borderRadius: 24,
-      padding: '24px 28px',
+      borderRadius: 20,
+      padding: '20px 24px',
       position: 'relative',
       overflow: 'hidden',
       boxShadow: shadow,
@@ -28,42 +28,40 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
     }}>
       {/* left accent bar */}
       <div style={{
-        position: 'absolute', left: 0, top: 20, bottom: 20,
-        width: 4, borderRadius: '0 4px 4px 0',
+        position: 'absolute', left: 0, top: 16, bottom: 16,
+        width: 3, borderRadius: '0 4px 4px 0',
         background: barColor, transition: 'background 0.4s',
-        boxShadow: `0 0 8px ${barColor}`
       }} />
 
       {/* top row */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: -0.2, marginBottom: 8 }}>
+          <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: -0.2, marginBottom: 6 }}>
             {a.name}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--text-1)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: 6 }}>{a.code}</span>
-            <span style={{ fontSize: 13, color: 'var(--text-2)' }}>{a.day}요일 {a.period}</span>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--text-2)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: 4 }}>{a.code}</span>
+            <span style={{ fontSize: 12, color: 'var(--text-2)' }}>{a.day}요일 {a.period}</span>
           </div>
         </div>
         {a.status === 'monitoring' && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 99,
-            background: 'var(--amber-dim)', color: 'var(--amber)',
-            border: '1px solid var(--amber-brd)', whiteSpace: 'nowrap',
+            fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 99,
+            background: 'var(--glass-bg)', color: 'var(--text-2)',
+            border: '1px solid var(--border)', whiteSpace: 'nowrap',
           }}>
-            <span className="bpulse" style={{ background: 'var(--amber)' }} />모니터링 중
+            <img src="/ling.png" style={{ width: 10, height: 10, opacity: 0.5 }} />모니터링 중
           </span>
         )}
         {a.status === 'triggered' && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 99,
+            fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 99,
             background: 'var(--green-dim)', color: 'var(--green)',
             border: '1px solid var(--green-brd)', whiteSpace: 'nowrap',
-            boxShadow: '0 0 10px var(--green-dim)'
           }}>
-            <span className="bpulse" style={{ background: 'var(--green)' }} />빈자리 발생
+            <img src="/ling.png" style={{ width: 10, height: 10 }} className="bpulse" />빈자리 발생
           </span>
         )}
       </div>

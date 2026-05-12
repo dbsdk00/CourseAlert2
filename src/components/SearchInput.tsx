@@ -54,22 +54,21 @@ export default function SearchInput(props: Props) {
     <>
       {/* 탭 */}
       <div style={{
-        display: 'flex', gap: 6, marginBottom: 20,
-        background: 'var(--bg-2)', borderRadius: 12, padding: 4,
-        width: 'fit-content',
-        border: '1px solid var(--border)'
+        display: 'flex', gap: 6, marginBottom: 24,
+        background: 'transparent', borderRadius: 12, padding: 0,
+        width: 'fit-content'
       }}>
         {(['course', 'timeslot'] as RegisterMode[]).map(m => (
           <button key={m} onClick={() => resetSearch(m)} style={{
             height: 36, padding: '0 20px', borderRadius: 8,
             border: 'none', cursor: 'pointer',
-            fontSize: 13, fontWeight: 600, fontFamily: 'var(--sans)',
+            fontSize: 14, fontWeight: 500, fontFamily: 'var(--sans)',
             transition: 'all 0.2s',
-            background: mode === m ? 'var(--accent-dim)' : 'transparent',
-            color: mode === m ? 'var(--accent)' : 'var(--text-2)',
-            boxShadow: mode === m ? 'inset 0 0 0 1px var(--accent-brd)' : 'none',
+            background: mode === m ? 'var(--bg-2)' : 'transparent',
+            color: mode === m ? 'var(--text-0)' : 'var(--text-2)',
+            boxShadow: 'none',
           }}>
-            {m === 'course' ? '과목 탐색' : '시간대 탐색'}
+            {m === 'course' ? '특정 과목' : '시간대 탐색'}
           </button>
         ))}
       </div>
@@ -133,23 +132,23 @@ export default function SearchInput(props: Props) {
       <style>{`
         .field { display: flex; flex-direction: column; gap: 8px; }
         .field-label {
-          font-size: 12px; color: var(--text-2);
-          letter-spacing: 0.5px; font-weight: 500;
+          font-size: 13px; color: var(--text-2);
+          letter-spacing: 0px; font-weight: 500;
         }
         .input-focus:focus {
-          border-color: var(--accent);
-          box-shadow: 0 0 0 2px var(--accent-dim);
+          border-color: var(--text-2);
+          box-shadow: 0 0 0 1px var(--text-2);
         }
         .btn-search {
           height: 44px; padding: 0 24px; border-radius: 12px;
-          border: 1px solid var(--accent-brd); background: var(--accent-dim);
-          color: var(--accent); font-size: 14px; font-weight: 600;
+          border: 1px solid var(--border); background: var(--glass-bg);
+          color: var(--text-1); font-size: 14px; font-weight: 500;
           font-family: var(--sans); cursor: pointer; white-space: nowrap;
           transition: all 0.2s; flex-shrink: 0; align-self: flex-end;
         }
         .btn-search:hover {
-          background: rgba(56, 189, 248, 0.25);
-          box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+          background: var(--bg-2);
+          color: var(--text-0);
         }
         .btn-search:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
       `}</style>

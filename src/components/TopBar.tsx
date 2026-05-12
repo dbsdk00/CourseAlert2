@@ -24,16 +24,15 @@ export default function TopBar({ monitoringCount, serverOk }: Props) {
       {/* 로고 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{
-          width: 36, height: 36, borderRadius: 12,
-          background: 'var(--accent-dim)', border: '1px solid var(--accent-brd)',
+          width: 32, height: 32, borderRadius: 10,
+          background: 'var(--bg-2)', border: '1px solid var(--border)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0,
-          boxShadow: '0 0 16px var(--accent-dim)'
+          flexShrink: 0
         }}>
-          <img src="/ling.png" alt="ling" style={{ width: 20, height: 20, filter: 'drop-shadow(0 0 4px rgba(255, 200, 0, 0.4))' }} />
+          <img src="/ling.png" alt="ling" style={{ width: 18, height: 18 }} />
         </div>
-        <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.5 }}>
-          Course<span style={{ color: 'var(--accent)', textShadow: '0 0 12px var(--accent-glow)' }}>Alert</span>
+        <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: -0.5 }}>
+          Course<span style={{ color: 'var(--accent)' }}>Alert</span>
         </span>
       </div>
 
