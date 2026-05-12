@@ -93,7 +93,7 @@ export default function RegisterForm({ onRegister }: Props) {
     return () => clearInterval(interval);
   }, [searchState, mode, day, timeFrom, timeTo, results.length]);
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!selectedId) return;
     const selected = results.find(r => r.courseId === selectedId);
     if (!selected) return;
@@ -101,6 +101,20 @@ export default function RegisterForm({ onRegister }: Props) {
     if (selected.enrolled < selected.limit) {
       alert('이미 여석이 있는 강의입니다.\n직접 수강신청하세요.');
       return;
+    }
+
+    // 브라우저의 엄격한 보안 정책을 맞추기 위해 사용자가 클릭한 즉시 권한을 요청합니다.
+    if (typeof Notification !== 'undefined') {
+      if (Notification.permission === 'default') {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') {
+          alert('푸시 알림 권한을 허용해야 빈자리 알림을 받을 수 있습니다!');
+          return;
+        }
+      } else if (Notification.permission === 'denied') {
+        alert('알림이 차단되어 있습니다. 주소창 왼쪽 자물쇠를 눌러 알림 권한을 [허용]으로 변경해주세요.');
+        return;
+      }
     }
 
     const success = onRegister({
