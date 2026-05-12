@@ -51,7 +51,7 @@ export default defineConfig({
         ],
         // 알림 클릭 핸들러 인라인으로 추가
         additionalManifestEntries: [],
-        importScripts: [],
+        importScripts: ['/push-sw.js'],
         skipWaiting: true,
         clientsClaim: true,
       },
