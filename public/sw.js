@@ -9,7 +9,8 @@ self.addEventListener('push', function(event) {
       tag: data.tag,
       data: { url: data.url },
       requireInteraction: true,
-      vibrate: [200, 100, 200]
+      vibrate: [200, 100, 200],
+      silent: false
     };
 
     event.waitUntil(
