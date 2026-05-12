@@ -90,28 +90,54 @@ export function useAlertStore() {
 
   // 백엔드에 구독 정보 및 모니터링 과목 목록 전송
   const syncBackend = useCallback(async () => {
-    if (pushSubRef.current) {
-      const courses = alerts.map(a => a.code).filter(c => c !== 'TIME');
-      try {
+    try {
+      let sub = pushSubRef.current;
+      
+      // 구독 정보가 없다면 권한 요청 및 구독 시도 (사용자 상호작용 시점에 호출됨)
+      if (!sub && 'serviceWorker' in navigator && 'PushManager' in window) {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
+        
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          const registration = await navigator.serviceWorker.ready;
+          sub = await registration.pushManager.getSubscription();
+          
+          if (!sub) {
+            const res = await fetch(`${API}/api/vapidPublicKey`);
+            if (res.ok) {
+              const { publicKey } = await res.json();
+              if (publicKey) {
+                sub = await registration.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: urlBase64ToUint8Array(publicKey)
+                });
+              }
+            }
+          }
+          pushSubRef.current = sub;
+        }
+      }
+
+      if (sub) {
+        const courses = alerts.map(a => a.code).filter(c => c !== 'TIME');
         await fetch(`${API}/api/subscribe`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            subscription: pushSubRef.current,
+            subscription: sub,
             courses
           })
         });
-      } catch (err) {
-        console.error('Failed to sync subscriptions to backend', err);
       }
+    } catch (err) {
+      console.error('Failed to sync subscriptions to backend', err);
     }
   }, [alerts]);
 
   // 알림 목록이 바뀔 때마다 백엔드 동기화
   useEffect(() => {
-    if (pushSubRef.current) {
-      syncBackend();
-    }
+    syncBackend();
   }, [alerts, syncBackend]);
 
   const startTicker = useCallback(() => {
