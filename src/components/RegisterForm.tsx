@@ -161,7 +161,8 @@ export default function RegisterForm({ onRegister }: Props) {
       <div style={{
         fontSize: 12, fontWeight: 600, letterSpacing: '1px',
         textTransform: 'uppercase', color: 'var(--accent)',
-        marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12,
+        display: 'flex', alignItems: 'center', gap: 12,
+        maxWidth: 820, margin: '0 auto 16px'
       }}>
         <span style={{ 
           width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)',
@@ -172,7 +173,8 @@ export default function RegisterForm({ onRegister }: Props) {
       </div>
 
       <div className="glass-panel" style={{
-        borderRadius: 24, padding: '28px 32px', marginBottom: 36,
+        borderRadius: 24, padding: '28px 32px',
+        maxWidth: 820, margin: '0 auto 36px'
       }}>
         <SearchInput
           mode={mode}

@@ -17,9 +17,10 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
         }} />
         등록된 알림
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 36 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16, marginBottom: 36 }}>
         {alerts.length === 0 ? (
           <div className="glass-panel animate-slide-down" style={{
+            gridColumn: '1 / -1',
             borderRadius: 24, padding: '48px 24px', textAlign: 'center',
             borderStyle: 'dashed', borderColor: 'var(--border-md)'
           }}>
@@ -49,7 +50,7 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
             빈자리 발생 기록
           </div>
           <div className="custom-scrollbar" style={{ 
-            display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36,
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12, marginBottom: 36,
             maxHeight: 300, overflowY: 'auto', paddingRight: 8
           }}>
             {logs.map(log => (
