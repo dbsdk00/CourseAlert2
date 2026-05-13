@@ -22,7 +22,7 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid var(--border)',
   borderRadius: 10,
   color: 'var(--text-0)',
-  fontSize: 13,
+  fontSize: 16, /* iOS 자동 확대 방지를 위한 최소 크기 */
   fontFamily: 'var(--sans)',
   padding: '0 12px',
   outline: 'none',
