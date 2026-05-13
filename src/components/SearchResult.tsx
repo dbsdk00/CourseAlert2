@@ -50,7 +50,10 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
             <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="custom-scrollbar" style={{ 
+            display: 'flex', flexDirection: 'column', gap: 8,
+            maxHeight: '280px', overflowY: 'auto', paddingRight: 4
+          }}>
             {results.map(course => {
               const isFull = course.enrolled >= course.limit;
               const remain = Math.max(0, course.limit - course.enrolled);
@@ -59,12 +62,10 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
               return (
                 <div
                   key={course.courseId}
-                  onClick={() => isFull && onSelect(course.courseId)}
+                  onClick={() => onSelect(course.courseId)}
                   style={{
                     padding: '16px 18px', borderRadius: 16,
-                    cursor: isFull ? 'pointer' : 'not-allowed',
-                    opacity: isFull ? 1 : 0.5,
-                    filter: isFull ? 'none' : 'grayscale(1)',
+                    cursor: 'pointer',
                     border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--glass-border)'}`,
                     background: isSelected ? 'var(--accent-dim)' : 'var(--glass-bg)',
                     backdropFilter: 'blur(8px)',
@@ -73,64 +74,39 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                     display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', gap: 12,
                     userSelect: 'none',
+                    flexShrink: 0,
                   }}
                   className="result-item"
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1, minWidth: 0 }}>
-                    <div style={{ 
-                      fontSize: 16, fontWeight: 700, color: 'var(--text-0)',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-                    }}>
-                      {course.name}
-                    </div>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ 
+                        fontSize: 16, fontWeight: 700, color: 'var(--text-0)',
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                      }}>
+                        {course.name}
+                      </span>
                       <span style={{
                         fontSize: 11, color: 'var(--text-1)',
                         background: 'var(--bg-3)', borderRadius: 6,
                         padding: '3px 8px', border: '1px solid var(--border)',
+                        flexShrink: 0
                       }}>
                         {course.code}-{course.courseId.split('-')[1]}
                       </span>
-                      
-                      {!isFull && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open('https://sugang.sungkyul.ac.kr', '_blank');
-                          }}
-                          style={{
-                            fontSize: 11, color: '#060913', fontWeight: 700,
-                            background: 'var(--green)', borderRadius: 6, cursor: 'pointer',
-                            padding: '4px 10px', border: 'none',
-                            boxShadow: '0 0 10px var(--green-dim)'
-                          }}>
-                          신청하러 가기 ↗
-                        </button>
-                      )}
                     </div>
-
                     <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.4 }}>
                       {course.professor} · {course.day}요일 {course.time}교시
                     </div>
                   </div>
 
-                  <div
-                    onClick={(e) => {
-                      if (!isFull) {
-                        e.stopPropagation();
-                        window.open('https://sugang.sungkyul.ac.kr', '_blank');
-                      }
-                    }}
-                    style={{
-                      flexShrink: 0, fontSize: 13, fontWeight: 700, textAlign: 'center',
-                      color: isFull ? 'var(--red)' : 'var(--green)',
-                      background: isFull ? 'var(--red-dim)' : 'var(--green-dim)',
-                      border: `1px solid ${isFull ? 'var(--red-brd)' : 'var(--green-brd)'}`,
-                      borderRadius: 10, padding: '6px 14px',
-                      cursor: !isFull ? 'pointer' : 'default'
-                    }}
-                  >
+                  <div style={{
+                    flexShrink: 0, fontSize: 13, fontWeight: 700, textAlign: 'center',
+                    color: isFull ? 'var(--red)' : 'var(--green)',
+                    background: isFull ? 'var(--red-dim)' : 'var(--green-dim)',
+                    border: `1px solid ${isFull ? 'var(--red-brd)' : 'var(--green-brd)'}`,
+                    borderRadius: 10, padding: '6px 14px',
+                  }}>
                     {isFull ? '마감' : `여석 ${remain}`}
                     <div style={{ fontSize: 11, fontWeight: 500, marginTop: 2, opacity: 0.8 }}>
                       {course.enrolled}/{course.limit}

@@ -49,21 +49,22 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
             빈자리 발생 기록
           </div>
           <div className="custom-scrollbar" style={{
-            display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36,
-            maxHeight: 300, overflowY: 'auto', paddingRight: 8
+            display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 36,
+            maxHeight: '210px', overflowY: 'auto', paddingRight: 8
           }}>
             {logs.map(log => (
               <div key={log.id} className="glass-panel animate-slide-up" style={{
-                borderRadius: 16, padding: '16px 20px',
+                borderRadius: 14, padding: '14px 18px',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                borderLeft: '4px solid var(--green)',
+                borderLeft: '3px solid var(--green)',
                 background: 'linear-gradient(90deg, var(--green-dim) 0%, var(--glass-bg) 20%)',
+                flexShrink: 0
               }}>
                 <div>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-0)' }}>{log.courseName}</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-2)', marginLeft: 10, background: 'var(--bg-3)', padding: '3px 8px', borderRadius: 8 }}>{log.courseId}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-0)' }}>{log.courseName}</span>
+                  <span style={{ fontSize: 10, color: 'var(--text-2)', marginLeft: 8, background: 'var(--bg-3)', padding: '2px 6px', borderRadius: 6 }}>{log.courseId}</span>
                 </div>
-                <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--green)', fontWeight: 500 }}>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--green)', fontWeight: 500 }}>
                   {log.triggeredAt}
                 </span>
               </div>
@@ -80,6 +81,19 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
         }
         .sec-label::after {
           content: ''; flex: 1; height: 1px; background: var(--border-md);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: var(--border-md);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: var(--text-3);
         }
       `}</style>
     </>

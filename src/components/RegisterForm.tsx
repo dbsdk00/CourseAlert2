@@ -199,23 +199,58 @@ export default function RegisterForm({ onRegister }: Props) {
         }}>
           <span style={{ fontSize: 12, color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
             {selectedId ? (
-              <><span style={{ color: 'var(--accent)' }}>✨</span> 선택된 수업에 빈자리 발생 시 즉시 알림을 보내드려요</>
+              results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit! ? (
+                <><span style={{ color: 'var(--green)' }}>✅</span> 여석이 있습니다! 바로 신청하러 가세요</>
+              ) : (
+                <><span style={{ color: 'var(--accent)' }}>✨</span> 선택된 수업에 빈자리 발생 시 즉시 알림을 보내드려요</>
+              )
             ) : mode === 'course' ? (
               <><span style={{ opacity: 0.6 }}>💡</span> 과목 코드와 분반을 입력하고 검색해주세요</>
             ) : (
               <><span style={{ opacity: 0.6 }}>💡</span> 요일과 교시를 선택하고 검색해주세요</>
             )}
           </span>
-          <button className="btn-register" onClick={handleRegister} disabled={!selectedId}>
-            + 알림 등록
-          </button>
+          <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'flex-end' }}>
+            <button 
+              className="btn-direct-link"
+              onClick={() => window.open('https://sugang.sungkyul.ac.kr', '_blank')}
+              disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! >= results.find(r => r.courseId === selectedId)?.limit!)}
+            >
+              신청하러 가기 ↗
+            </button>
+            <button 
+              className="btn-register" 
+              onClick={handleRegister} 
+              disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit!)}
+            >
+              + 알림 등록
+            </button>
+          </div>
         </div>
       </div>
 
       <style>{`
         .form-bottom {
-          display: flex; align-items: center;
-          justify-content: space-between; gap: 16px; flex-wrap: wrap;
+          display: flex; flex-direction: column; gap: 16px;
+        }
+        @media (min-width: 601px) {
+          .form-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
+        }
+        .btn-direct-link {
+          height: 38px; padding: 0 20px; border-radius: 10px;
+          border: 1px solid var(--green-brd); background: var(--green-dim);
+          color: var(--green); font-size: 13px; font-weight: 700;
+          font-family: var(--sans); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+          flex: 1; max-width: 160px;
+        }
+        .btn-direct-link:hover:not(:disabled) {
+          background: rgba(52, 211, 153, 0.25);
+          box-shadow: 0 4px 16px rgba(52, 211, 153, 0.3);
+          transform: translateY(-2px);
+        }
+        .btn-direct-link:disabled {
+          opacity: 0.4; cursor: not-allowed;
+          background: var(--bg-3); border-color: var(--border); color: var(--text-2);
         }
         .btn-register {
           height: 38px; padding: 0 20px; border-radius: 10px;
@@ -223,7 +258,7 @@ export default function RegisterForm({ onRegister }: Props) {
           color: var(--accent); font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer;
           transition: all 0.2s; white-space: nowrap;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+          flex: 1; max-width: 160px;
         }
         .btn-register:hover:not(:disabled) { 
           background: rgba(56, 189, 248, 0.25);

@@ -28,19 +28,12 @@ function playBeep() {
 
 export default function App() {
   const store = useAlertStore();
-  const [popupAlerts, setPopupAlerts] = useState<AlertItem[]>([]); // ← 배열로 변경
 
   useEffect(() => {
     store.setOnVacancy((triggered: AlertItem) => {
-      // 알림 스택에 추가 (중복 방지 및 안전한 업데이트)
-      setPopupAlerts(currentStack => {
-        if (currentStack.some(a => a.id === triggered.id)) return currentStack;
-        return [...currentStack, triggered];
-      });
-
       playBeep();
 
-      // 브라우저 알림 발송 (개별 고유 태그로 스태킹 보장)
+      // 브라우저 시스템 알림 발송 (앱 외부에서도 보이도록)
       if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         const registrationUrl = 'https://sugang.sungkyul.ac.kr';
         const n = new Notification(`${triggered.name} 빈자리 발견!`, {
@@ -60,22 +53,9 @@ export default function App() {
     });
   }, [store.setOnVacancy]);
 
-  const handleClose = (id: number) => {
-    setPopupAlerts(prev => prev.filter(a => a.id !== id)); // ← 개별 닫기
-  };
-
   return (
     <>
       <div className="ambient" />
-      {/* ← 스택으로 렌더링 */}
-      {popupAlerts.map((alert, index) => (
-        <Popup
-          key={alert.id}
-          alert={alert}
-          index={index}
-          onClose={() => handleClose(alert.id)}
-        />
-      ))}
       <div className="shell">
         <TopBar monitoringCount={store.monitoringCount} serverOk={store.serverOk} />
         <RegisterForm onRegister={store.register} />

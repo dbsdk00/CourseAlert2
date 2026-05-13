@@ -20,6 +20,12 @@
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.shell::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 @media (max-width: 600px) {

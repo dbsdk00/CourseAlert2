@@ -36,13 +36,24 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
 
       {/* top row */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-        <div>
-          <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: -0.2, marginBottom: 4 }}>
-            {a.name}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ 
+              fontSize: 16, fontWeight: 700, color: 'var(--text-0)', 
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' 
+            }}>
+              {a.name}
+            </div>
+            <span style={{ 
+              fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--text-1)', 
+              background: 'var(--bg-3)', padding: '1px 6px', borderRadius: 4,
+              flexShrink: 0
+            }}>
+              {a.code}
+            </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-1)', background: 'var(--bg-3)', padding: '1px 6px', borderRadius: 4 }}>{a.code}</span>
-            <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{a.day}요일 {a.period}</span>
+          <div style={{ fontSize: 11, color: 'var(--text-2)' }}>
+            {a.day}요일 {a.period}
           </div>
         </div>
         {a.status === 'monitoring' && (
