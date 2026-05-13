@@ -49,7 +49,7 @@ export default function App() {
           tag: `vacancy-${triggered.id}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           renotify: true,
           data: { url: registrationUrl }
-        });
+        } as any);
 
         n.onclick = (e) => {
           e.preventDefault();

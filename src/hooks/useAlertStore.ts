@@ -142,67 +142,128 @@ export function useAlertStore() {
 
   const startTicker = useCallback(() => {
     if (tickerRef.current) return;
-    tickerRef.current = setInterval(() => {
+
+    const checkAll = async () => {
+      // 1. 현재 알림 목록 가져오기
+      let currentAlerts: AlertItem[] = [];
       setAlerts(prev => {
-        if (prev.length === 0) return prev;
-
-        // 병렬로 모든 과목 체크하여 속도 극대화
-        Promise.all(prev.map(async (alert) => {
-          try {
-            const url = alert.code !== 'TIME'
-              ? `${API}/api/courses/${alert.code}`
-              : `${API}/api/courses?day=${alert.day}`;
-
-            const res = await fetch(url);
-            if (!res.ok) return;
-
-            if (alert.code !== 'TIME') {
-              const course = await res.json();
-              if (course.remain > 0) {
-                if (triggeredIdsRef.current.has(alert.id)) {
-                  setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, current: course.enrolled, max: course.limit, checks: a.checks + 1, lastChecked: ts() } : a));
-                  return;
-                }
-                triggeredIdsRef.current.add(alert.id);
-                const triggered: AlertItem = { ...alert, current: course.enrolled, max: course.limit, status: 'triggered', checks: alert.checks + 1, lastChecked: ts() };
-                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? triggered : a));
-                setHitCount(h => h + 1);
-                setLogs(prev2 => [{ id: ++logIdRef.current, courseId: alert.code, courseName: alert.name, triggeredAt: ts() }, ...prev2]);
-                onVacancyRef.current?.(triggered);
-              } else {
-                triggeredIdsRef.current.delete(alert.id);
-                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, current: course.enrolled, max: course.limit, status: 'monitoring', checks: a.checks + 1, lastChecked: ts() } : a));
-              }
-            } else {
-              const all = await res.json();
-              const [pFrom, pTo] = alert.period.replace('교시', '').split('-').map(Number);
-              const matched = all.filter((c: any) => {
-                const [from, to] = c.time.includes('-') ? c.time.split('-').map(Number) : [Number(c.time), Number(c.time)];
-                return from <= pTo && to >= pFrom && c.remain > 0;
-              });
-
-              if (matched.length > 0) {
-                if (triggeredIdsRef.current.has(alert.id)) {
-                  setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, checks: a.checks + 1, lastChecked: ts() } : a));
-                  return;
-                }
-                triggeredIdsRef.current.add(alert.id);
-                const triggered: AlertItem = { ...alert, status: 'triggered', checks: alert.checks + 1, lastChecked: ts() };
-                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? triggered : a));
-                setHitCount(h => h + 1);
-                setLogs(prev2 => [{ id: ++logIdRef.current, courseId: alert.code, courseName: alert.name, triggeredAt: ts() }, ...prev2]);
-                onVacancyRef.current?.(triggered);
-              } else {
-                triggeredIdsRef.current.delete(alert.id);
-                setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, status: 'monitoring', checks: a.checks + 1, lastChecked: ts() } : a));
-              }
-            }
-          } catch { }
-        }));
-
+        currentAlerts = prev;
         return prev;
       });
-    }, POLL_INTERVAL);
+
+      if (currentAlerts.length === 0) return;
+
+      // 2. 모든 과목 병렬 조회
+      const results = await Promise.all(currentAlerts.map(async (alert) => {
+        try {
+          const url = alert.code !== 'TIME'
+            ? `${API}/api/courses/${alert.code}`
+            : `${API}/api/courses?day=${alert.day}`;
+
+          const res = await fetch(url);
+          if (!res.ok) return { id: alert.id, error: true };
+
+          const data = await res.json();
+          return { id: alert.id, data, type: alert.code !== 'TIME' ? 'course' : 'time' };
+        } catch {
+          return { id: alert.id, error: true };
+        }
+      }));
+
+      // 3. 결과를 한 번에 배치 업데이트
+      setAlerts(prev => {
+        let changed = false;
+        const next = prev.map(alert => {
+          const res = results.find(r => r.id === alert.id);
+          if (!res || res.error) return alert;
+
+          if (res.type === 'course') {
+            const course = res.data;
+            const isTriggered = course.remain > 0;
+            if (isTriggered) {
+              if (!triggeredIdsRef.current.has(alert.id)) {
+                triggeredIdsRef.current.add(alert.id);
+                setHitCount(h => h + 1);
+                setLogs(l => [{ id: ++logIdRef.current, courseId: alert.code, courseName: alert.name, triggeredAt: ts() }, ...l]);
+                const triggered: AlertItem = { 
+                  ...alert, 
+                  current: course.enrolled, 
+                  max: course.limit, 
+                  status: 'triggered', 
+                  checks: alert.checks + 1, 
+                  lastChecked: ts() 
+                };
+                onVacancyRef.current?.(triggered);
+                changed = true;
+                return triggered;
+              }
+              changed = true;
+              return { 
+                ...alert, 
+                current: course.enrolled, 
+                max: course.limit, 
+                checks: alert.checks + 1, 
+                lastChecked: ts() 
+              } as AlertItem;
+            } else {
+              triggeredIdsRef.current.delete(alert.id);
+              changed = true;
+              return { 
+                ...alert, 
+                current: course.enrolled, 
+                max: course.limit, 
+                status: 'monitoring', 
+                checks: alert.checks + 1, 
+                lastChecked: ts() 
+              } as AlertItem;
+            }
+          } else {
+            const all = res.data;
+            const [pFrom, pTo] = alert.period.replace('교시', '').split('-').map(Number);
+            const matched = all.filter((c: any) => {
+              const [from, to] = c.time.includes('-') ? c.time.split('-').map(Number) : [Number(c.time), Number(c.time)];
+              return from <= pTo && to >= pFrom && c.remain > 0;
+            });
+
+            if (matched.length > 0) {
+              if (!triggeredIdsRef.current.has(alert.id)) {
+                triggeredIdsRef.current.add(alert.id);
+                setHitCount(h => h + 1);
+                setLogs(l => [{ id: ++logIdRef.current, courseId: alert.code, courseName: alert.name, triggeredAt: ts() }, ...l]);
+                const triggered: AlertItem = { 
+                  ...alert, 
+                  status: 'triggered', 
+                  checks: alert.checks + 1, 
+                  lastChecked: ts() 
+                };
+                onVacancyRef.current?.(triggered);
+                changed = true;
+                return triggered;
+              }
+              changed = true;
+              return { 
+                ...alert, 
+                checks: alert.checks + 1, 
+                lastChecked: ts() 
+              } as AlertItem;
+            } else {
+              triggeredIdsRef.current.delete(alert.id);
+              changed = true;
+              return { 
+                ...alert, 
+                status: 'monitoring', 
+                checks: alert.checks + 1, 
+                lastChecked: ts() 
+              } as AlertItem;
+            }
+          }
+        });
+        return changed ? next : prev;
+      });
+    };
+
+    checkAll();
+    tickerRef.current = setInterval(checkAll, POLL_INTERVAL);
   }, []);
 
   const stopTickerIfEmpty = useCallback((nextAlerts: AlertItem[]) => {
