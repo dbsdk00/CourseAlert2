@@ -8,7 +8,7 @@ interface Props {
 export default function AlertCard({ alert: a, onDelete }: Props) {
   const pct = (a.current / a.max) * 100;
   const fillColor = pct >= 100 ? 'var(--red)' : pct >= 85 ? 'var(--amber)' : 'var(--green)';
-  const capColor  = pct >= 100 ? 'var(--red)' : pct >= 85 ? 'var(--amber)' : 'var(--green)';
+  const capColor = pct >= 100 ? 'var(--red)' : pct >= 85 ? 'var(--amber)' : 'var(--green)';
 
   const borderColor = a.status === 'triggered' ? 'var(--green-glow)' : 'var(--glass-border)';
   const shadow = a.status === 'triggered' ? '0 0 20px rgba(52, 211, 153, 0.2)' : '0 8px 32px rgba(0, 0, 0, 0.3)';
@@ -38,43 +38,42 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <div style={{ 
-              fontSize: 16, fontWeight: 700, color: 'var(--text-0)', 
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' 
+            <div style={{
+              fontSize: 16, fontWeight: 400, color: 'var(--text-0)',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
             }}>
               {a.name}
             </div>
-            <span style={{ 
-              fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--text-1)', 
+            <span style={{
+              fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--text-1)',
               background: 'var(--bg-3)', padding: '1px 6px', borderRadius: 4,
               flexShrink: 0
             }}>
               {a.code}
             </span>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text-2)' }}>
+          <div style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 300 }}>
             {a.day}요일 {a.period}
           </div>
         </div>
         {a.status === 'monitoring' && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 99,
-            background: 'var(--amber-dim)', color: 'var(--amber)',
-            border: '1px solid var(--amber-brd)', whiteSpace: 'nowrap',
+            fontSize: 10, fontWeight: 400, padding: '4px 10px', borderRadius: 8,
+            background: 'var(--accent-dim)', color: 'var(--accent)',
+            whiteSpace: 'nowrap',
           }}>
-            <span className="bpulse" style={{ background: 'var(--amber)' }} />모니터링 중
+            <span className="bpulse" style={{ background: 'var(--accent)' }} />모니터링
           </span>
         )}
         {a.status === 'triggered' && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 99,
+            fontSize: 10, fontWeight: 400, padding: '4px 10px', borderRadius: 8,
             background: 'var(--green-dim)', color: 'var(--green)',
-            border: '1px solid var(--green-brd)', whiteSpace: 'nowrap',
-            boxShadow: '0 0 8px var(--green-dim)'
+            whiteSpace: 'nowrap',
           }}>
-            <span className="bpulse" style={{ background: 'var(--green)' }} />빈자리 발생
+            <span className="bpulse" style={{ background: 'var(--green)' }} />빈자리 발견
           </span>
         )}
       </div>

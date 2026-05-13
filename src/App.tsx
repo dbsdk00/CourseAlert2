@@ -36,9 +36,9 @@ export default function App() {
       if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         const registrationUrl = 'https://sugang.sungkyul.ac.kr';
         const n = new Notification(`${triggered.name} 빈자리 발견!`, {
-          body: `[${triggered.code}] 과목에 빈자리가 생겼습니다. 클릭하여 신청하세요!`,
+          body: `[${triggered.code}] 빈자리가 생겼습니다. 클릭하여 신청하세요!`,
           icon: '/icons/icon-192.png',
-          tag: `vacancy-${triggered.id}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          tag: `vacancy-${triggered.id}`, // 고유 ID를 태그로 사용하여 중복 알림 방지 (동일 과목은 하나만 뜸)
           renotify: true,
           data: { url: registrationUrl }
         } as any);

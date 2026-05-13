@@ -48,7 +48,7 @@ export default function RegisterForm({ onRegister }: Props) {
           const [from, to] = c.time.includes('-')
             ? c.time.split('-').map(Number)
             : [Number(c.time), Number(c.time)];
-          return from <= Number(timeTo) && to >= Number(timeFrom);
+          return c.day === day && from <= Number(timeTo) && to >= Number(timeFrom);
         });
 
         if (filtered.length === 0) { setSearchState('empty'); return; }
@@ -82,12 +82,12 @@ export default function RegisterForm({ onRegister }: Props) {
               const [from, to] = c.time.includes('-')
                 ? c.time.split('-').map(Number)
                 : [Number(c.time), Number(c.time)];
-              return from <= Number(timeTo) && to >= Number(timeFrom);
+              return c.day === day && from <= Number(timeTo) && to >= Number(timeFrom);
             });
             setResults(filtered);
           }
         }
-      } catch (err) {}
+      } catch (err) { }
     }, 2000); // 2초마다 갱신
 
     return () => clearInterval(interval);
@@ -162,12 +162,11 @@ export default function RegisterForm({ onRegister }: Props) {
         textTransform: 'uppercase', color: 'var(--accent)',
         marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12,
       }}>
-        <span style={{ 
+        <span style={{
           width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)',
           boxShadow: '0 0 8px var(--accent-glow)'
         }} />
         알림 등록
-        <div style={{ flex: 1, height: 1, background: 'var(--border-md)' }} />
       </div>
 
       <div className="glass-panel" style={{
@@ -195,36 +194,49 @@ export default function RegisterForm({ onRegister }: Props) {
 
         {/* 하단 버튼 영역 */}
         <div className="form-bottom" style={{
-          marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--glass-border)'
+          marginTop: 20, paddingTop: 16
         }}>
-          <span style={{ fontSize: 12, color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            {selectedId ? (
-              results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit! ? (
-                <><span style={{ color: 'var(--green)' }}>✅</span> 여석이 있습니다! 바로 신청하러 가세요</>
+          <span style={{ 
+            fontSize: 12, color: 'var(--text-2)', display: 'flex', alignItems: 'center', 
+            gap: 6, whiteSpace: 'nowrap', fontWeight: 500
+          }}>
+            {!selectedId && (
+              mode === 'course' ? (
+                <><span style={{ opacity: 0.6 }}></span> 과목 코드와 분반을 입력하고 검색해주세요</>
               ) : (
-                <><span style={{ color: 'var(--accent)' }}>✨</span> 선택된 수업에 빈자리 발생 시 즉시 알림을 보내드려요</>
+                <><span style={{ opacity: 0.6 }}></span> 요일과 교시를 선택하고 검색해주세요</>
               )
-            ) : mode === 'course' ? (
-              <><span style={{ opacity: 0.6 }}>💡</span> 과목 코드와 분반을 입력하고 검색해주세요</>
-            ) : (
-              <><span style={{ opacity: 0.6 }}>💡</span> 요일과 교시를 선택하고 검색해주세요</>
             )}
           </span>
           <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'flex-end' }}>
-            <button 
-              className="btn-direct-link"
-              onClick={() => window.open('https://sugang.sungkyul.ac.kr', '_blank')}
-              disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! >= results.find(r => r.courseId === selectedId)?.limit!)}
-            >
-              신청하러 가기 ↗
-            </button>
-            <button 
-              className="btn-register" 
-              onClick={handleRegister} 
-              disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit!)}
-            >
-              + 알림 등록
-            </button>
+            {typeof Notification !== 'undefined' && Notification.permission !== 'granted' ? (
+              <button
+                className="btn-permission"
+                onClick={async () => {
+                  const perm = await Notification.requestPermission();
+                  if (perm === 'granted') window.location.reload();
+                }}
+              >
+                알림 권한 허용하기
+              </button>
+            ) : (
+              <>
+                <button
+                  className="btn-direct-link"
+                  onClick={() => window.open('https://sugang.sungkyul.ac.kr', '_blank')}
+                  disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! >= results.find(r => r.courseId === selectedId)?.limit!)}
+                >
+                  신청하러 가기
+                </button>
+                <button
+                  className="btn-register"
+                  onClick={handleRegister}
+                  disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit!)}
+                >
+                  알림 등록
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -236,40 +248,50 @@ export default function RegisterForm({ onRegister }: Props) {
         @media (min-width: 601px) {
           .form-bottom { flex-direction: row; align-items: center; justify-content: space-between; }
         }
+        .btn-permission {
+          height: 42px; padding: 0 24px; border-radius: 12px; width: 100%;
+          border: 1px solid var(--accent-brd); background: var(--accent);
+          color: #000; font-size: 14px; font-weight: 800;
+          font-family: var(--sans); cursor: pointer; transition: all 0.2s;
+          box-shadow: 0 0 15px var(--accent-glow);
+          animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+          0% { transform: scale(1); box-shadow: 0 0 15px var(--accent-glow); }
+          50% { transform: scale(1.02); box-shadow: 0 0 25px var(--accent-glow); }
+          100% { transform: scale(1); box-shadow: 0 0 15px var(--accent-glow); }
+        }
         .btn-direct-link {
           height: 38px; padding: 0 20px; border-radius: 10px;
-          border: 1px solid var(--green-brd); background: var(--green-dim);
-          color: var(--green); font-size: 13px; font-weight: 700;
+          border: none; background: var(--accent-dim);
+          color: var(--accent); font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer; transition: all 0.2s; white-space: nowrap;
           flex: 1; max-width: 160px;
         }
         .btn-direct-link:hover:not(:disabled) {
-          background: rgba(52, 211, 153, 0.25);
-          box-shadow: 0 4px 16px rgba(52, 211, 153, 0.3);
+          background: rgba(250, 204, 21, 0.2);
           transform: translateY(-2px);
         }
         .btn-direct-link:disabled {
-          opacity: 0.4; cursor: not-allowed;
-          background: var(--bg-3); border-color: var(--border); color: var(--text-2);
+          opacity: 0.3; cursor: not-allowed;
+          background: var(--bg-3); color: var(--text-3);
         }
         .btn-register {
-          height: 38px; padding: 0 20px; border-radius: 10px;
-          border: 1px solid var(--accent-brd); background: var(--accent-dim);
-          color: var(--accent); font-size: 13px; font-weight: 700;
+          height: 38px; padding: 0 24px; border-radius: 10px;
+          border: none; background: var(--accent);
+          color: #ffffff; font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer;
           transition: all 0.2s; white-space: nowrap;
           flex: 1; max-width: 160px;
         }
         .btn-register:hover:not(:disabled) { 
-          background: rgba(56, 189, 248, 0.25);
-          box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
-          transform: translateY(-2px);
+          transform: translateY(-1px);
+          filter: brightness(0.9);
         }
         .btn-register:active:not(:disabled) { transform: translateY(0); }
         .btn-register:disabled { 
-          opacity: 0.4; cursor: not-allowed; 
-          background: var(--bg-3); border-color: var(--border); color: var(--text-2);
-          box-shadow: none;
+          opacity: 0.2; cursor: not-allowed; 
+          background: var(--bg-3); color: var(--text-3);
         }
         @media (max-width: 600px) { .btn-register { width: 100%; } }
       `}</style>

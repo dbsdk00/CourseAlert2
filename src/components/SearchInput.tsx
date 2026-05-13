@@ -19,10 +19,10 @@ const PERIODS = Array.from({ length: 12 }, (_, i) => String(i + 1));
 const inputStyle: React.CSSProperties = {
   height: 38,
   background: 'var(--bg-2)',
-  border: '1px solid var(--border)',
+  border: '1px solid transparent',
   borderRadius: 10,
   color: 'var(--text-0)',
-  fontSize: 16, /* iOS 자동 확대 방지를 위한 최소 크기 */
+  fontSize: '13.8px',
   fontFamily: 'var(--sans)',
   padding: '0 12px',
   outline: 'none',
@@ -30,7 +30,7 @@ const inputStyle: React.CSSProperties = {
   boxSizing: 'border-box',
   WebkitAppearance: 'none',
   appearance: 'none',
-  transition: 'border-color 0.2s, box-shadow 0.2s',
+  transition: 'all 0.2s',
 };
 
 const selectStyle: React.CSSProperties = {
@@ -54,20 +54,18 @@ export default function SearchInput(props: Props) {
     <>
       {/* 탭 */}
       <div style={{
-        display: 'flex', gap: 6, marginBottom: 20,
-        background: 'var(--bg-2)', borderRadius: 12, padding: 4,
-        width: 'fit-content',
-        border: '1px solid var(--border)'
+        display: 'flex', gap: 4, marginBottom: 20,
+        background: 'var(--bg-2)', borderRadius: 10, padding: 4,
+        width: 'fit-content'
       }}>
         {(['course', 'timeslot'] as RegisterMode[]).map(m => (
           <button key={m} onClick={() => resetSearch(m)} style={{
-            height: 32, padding: '0 16px', borderRadius: 6,
+            height: 30, padding: '0 16px', borderRadius: 8,
             border: 'none', cursor: 'pointer',
-            fontSize: 12, fontWeight: 600, fontFamily: 'var(--sans)',
+            fontSize: 12, fontWeight: 500, fontFamily: 'var(--sans)',
             transition: 'all 0.2s',
-            background: mode === m ? 'var(--accent-dim)' : 'transparent',
-            color: mode === m ? 'var(--accent)' : 'var(--text-2)',
-            boxShadow: mode === m ? 'inset 0 0 0 1px var(--accent-brd)' : 'none',
+            background: mode === m ? 'var(--bg-4)' : 'transparent',
+            color: mode === m ? 'var(--accent)' : 'var(--text-3)',
           }}>
             {m === 'course' ? '과목 탐색' : '시간대 탐색'}
           </button>
@@ -136,13 +134,17 @@ export default function SearchInput(props: Props) {
           font-size: 12px; color: var(--text-2);
           letter-spacing: 0.5px; font-weight: 500;
         }
+        .input-focus:hover {
+          border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        }
         .input-focus:focus {
-          border-color: var(--accent);
+          border: 1px solid var(--accent) !important;
+          background-color: #1e1e1e !important;
           box-shadow: 0 0 0 2px var(--accent-dim);
         }
         .btn-search {
           height: 38px; padding: 0 20px; border-radius: 10px;
-          border: 1px solid var(--accent-brd); background: var(--accent-dim);
+          border: none; background: var(--accent-dim);
           color: var(--accent); font-size: 13px; font-weight: 600;
           font-family: var(--sans); cursor: pointer; white-space: nowrap;
           transition: all 0.2s; flex-shrink: 0; align-self: flex-end;

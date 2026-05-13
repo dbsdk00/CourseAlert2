@@ -1,11 +1,5 @@
 .ambient {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(circle 800px at 15% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 80%),
-    radial-gradient(circle 600px at 85% 80%, rgba(52, 211, 153, 0.06) 0%, transparent 80%);
+  display: none;
 }
 
 .shell {
@@ -13,19 +7,9 @@
   z-index: 1;
   max-width: 760px;
   margin: 0 auto;
-  height: 100dvh;
-  padding: 0 20px 40px;
+  padding: 88px 20px 40px;
   width: 100%;
   box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.shell::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
 }
 
 @media (max-width: 600px) {

@@ -50,7 +50,7 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
             <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
           </div>
 
-          <div className="custom-scrollbar" style={{ 
+          <div className="custom-scrollbar" style={{
             display: 'flex', flexDirection: 'column', gap: 8,
             maxHeight: '280px', overflowY: 'auto', paddingRight: 4
           }}>
@@ -64,13 +64,10 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                   key={course.courseId}
                   onClick={() => onSelect(course.courseId)}
                   style={{
-                    padding: '16px 18px', borderRadius: 16,
+                    padding: '16px 18px', borderRadius: 12,
                     cursor: 'pointer',
-                    border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--glass-border)'}`,
-                    background: isSelected ? 'var(--accent-dim)' : 'var(--glass-bg)',
-                    backdropFilter: 'blur(8px)',
-                    boxShadow: isSelected ? '0 0 16px rgba(56,189,248,0.2)' : 'none',
-                    transition: 'all 0.2s',
+                    background: isSelected ? 'var(--bg-4)' : 'var(--bg-2)',
+                    transition: 'all 0.2s ease',
                     display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', gap: 12,
                     userSelect: 'none',
@@ -80,35 +77,34 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ 
-                        fontSize: 16, fontWeight: 700, color: 'var(--text-0)',
+                      <span style={{
+                        fontSize: 15, fontWeight: 500, color: 'var(--text-0)',
                         whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                       }}>
                         {course.name}
                       </span>
                       <span style={{
-                        fontSize: 11, color: 'var(--text-1)',
-                        background: 'var(--bg-3)', borderRadius: 6,
-                        padding: '3px 8px', border: '1px solid var(--border)',
-                        flexShrink: 0
+                        fontSize: 10, color: 'var(--text-3)',
+                        background: 'var(--bg-4)', borderRadius: 4,
+                        padding: '2px 6px',
+                        flexShrink: 0, fontWeight: 400, fontFamily: 'var(--mono)'
                       }}>
                         {course.code}-{course.courseId.split('-')[1]}
                       </span>
                     </div>
-                    <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.4, fontWeight: 400 }}>
                       {course.professor} · {course.day}요일 {course.time}교시
                     </div>
                   </div>
 
                   <div style={{
-                    flexShrink: 0, fontSize: 13, fontWeight: 700, textAlign: 'center',
-                    color: isFull ? 'var(--red)' : 'var(--green)',
-                    background: isFull ? 'var(--red-dim)' : 'var(--green-dim)',
-                    border: `1px solid ${isFull ? 'var(--red-brd)' : 'var(--green-brd)'}`,
-                    borderRadius: 10, padding: '6px 14px',
+                    flexShrink: 0, fontSize: 12, fontWeight: 500, textAlign: 'center',
+                    color: isFull ? 'var(--red)' : 'var(--accent)',
+                    background: isFull ? 'var(--red-dim)' : 'var(--accent-dim)',
+                    borderRadius: 8, padding: '6px 12px',
                   }}>
                     {isFull ? '마감' : `여석 ${remain}`}
-                    <div style={{ fontSize: 11, fontWeight: 500, marginTop: 2, opacity: 0.8 }}>
+                    <div style={{ fontSize: 10, fontWeight: 400, marginTop: 2, opacity: 0.6 }}>
                       {course.enrolled}/{course.limit}
                     </div>
                   </div>

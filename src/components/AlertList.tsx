@@ -21,10 +21,10 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
         {alerts.length === 0 ? (
           <div className="glass-panel animate-slide-down" style={{
             borderRadius: 24, padding: '48px 24px', textAlign: 'center',
-            borderStyle: 'dashed', borderColor: 'var(--border-md)'
+            background: 'var(--bg-1)'
           }}>
-            <img src="/ling.png" style={{ width: 44, height: 44, marginBottom: 16, opacity: 0.6 }} />
-            <div style={{ fontSize: 14, color: 'var(--text-1)', lineHeight: 1.6 }}>
+            <img src="/ling.png" style={{ width: '38.6px', height: '38.6px', marginBottom: 16, opacity: 0.4 }} />
+            <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, fontWeight: 500 }}>
               아직 등록된 알림이 없어요<br />위 폼에서 과목을 검색하고 추가해보세요
             </div>
           </div>
@@ -41,30 +41,29 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
 
       {logs.length > 0 && (
         <>
-          <div className="sec-label">
+          <div className="sec-label" style={{ opacity: 0.5, marginBottom: 12 }}>
             <span style={{
-              width: 8, height: 8, borderRadius: '50%', background: 'var(--green)',
-              boxShadow: '0 0 8px var(--green-glow)'
+              width: 6, height: 6, borderRadius: '50%', background: 'var(--text-3)',
             }} />
             빈자리 발생 기록
           </div>
           <div className="custom-scrollbar" style={{
-            display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 36,
-            maxHeight: '210px', overflowY: 'auto', paddingRight: 8
+            display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 36,
+            maxHeight: '160px', overflowY: 'auto', paddingRight: 8, opacity: 0.8,
+            background: 'var(--bg-1)', borderRadius: 12, padding: '12px'
           }}>
             {logs.map(log => (
-              <div key={log.id} className="glass-panel animate-slide-up" style={{
-                borderRadius: 14, padding: '14px 18px',
+              <div key={log.id} className="animate-slide-up" style={{
+                borderRadius: 10, padding: '10px 14px',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                borderLeft: '3px solid var(--green)',
-                background: 'linear-gradient(90deg, var(--green-dim) 0%, var(--glass-bg) 20%)',
+                background: 'var(--bg-2)',
                 flexShrink: 0
               }}>
-                <div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-0)' }}>{log.courseName}</span>
-                  <span style={{ fontSize: 10, color: 'var(--text-2)', marginLeft: 8, background: 'var(--bg-3)', padding: '2px 6px', borderRadius: 6 }}>{log.courseId}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-1)' }}>{log.courseName}</span>
+                  <span style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'var(--mono)' }}>{log.courseId}</span>
                 </div>
-                <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--green)', fontWeight: 500 }}>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--text-3)' }}>
                   {log.triggeredAt}
                 </span>
               </div>
