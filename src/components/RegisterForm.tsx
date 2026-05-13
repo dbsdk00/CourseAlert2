@@ -103,7 +103,6 @@ export default function RegisterForm({ onRegister }: Props) {
       return;
     }
 
-    // 브라우저의 엄격한 보안 정책을 맞추기 위해 사용자가 클릭한 즉시 권한을 요청합니다.
     if (typeof Notification !== 'undefined') {
       if (Notification.permission === 'default') {
         const perm = await Notification.requestPermission();
@@ -161,8 +160,7 @@ export default function RegisterForm({ onRegister }: Props) {
       <div style={{
         fontSize: 12, fontWeight: 600, letterSpacing: '1px',
         textTransform: 'uppercase', color: 'var(--accent)',
-        display: 'flex', alignItems: 'center', gap: 12,
-        maxWidth: 820, margin: '0 auto 16px'
+        marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12,
       }}>
         <span style={{ 
           width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)',
@@ -173,8 +171,7 @@ export default function RegisterForm({ onRegister }: Props) {
       </div>
 
       <div className="glass-panel" style={{
-        borderRadius: 24, padding: '28px 32px',
-        maxWidth: 820, margin: '0 auto 36px'
+        borderRadius: 20, padding: '20px 24px', marginBottom: 28,
       }}>
         <SearchInput
           mode={mode}
@@ -198,16 +195,15 @@ export default function RegisterForm({ onRegister }: Props) {
 
         {/* 하단 버튼 영역 */}
         <div className="form-bottom" style={{
-          marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--glass-border)'
+          marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--glass-border)'
         }}>
-          <span style={{ fontSize: 13, color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <img src="/ling.png" style={{ width: 14, height: 14, opacity: 0.7 }} />
+          <span style={{ fontSize: 12, color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
             {selectedId ? (
-              <>선택된 수업에 빈자리 발생 시 즉시 알림을 보내드려요</>
+              <><span style={{ color: 'var(--accent)' }}>✨</span> 선택된 수업에 빈자리 발생 시 즉시 알림을 보내드려요</>
             ) : mode === 'course' ? (
-              <>과목 코드와 분반을 입력하고 검색해주세요</>
+              <><span style={{ opacity: 0.6 }}>💡</span> 과목 코드와 분반을 입력하고 검색해주세요</>
             ) : (
-              <>요일과 교시를 선택하고 검색해주세요</>
+              <><span style={{ opacity: 0.6 }}>💡</span> 요일과 교시를 선택하고 검색해주세요</>
             )}
           </span>
           <button className="btn-register" onClick={handleRegister} disabled={!selectedId}>
@@ -222,22 +218,25 @@ export default function RegisterForm({ onRegister }: Props) {
           justify-content: space-between; gap: 16px; flex-wrap: wrap;
         }
         .btn-register {
-          height: 40px; padding: 0 24px; border-radius: 10px;
-          border: 1px solid var(--glass-border); background: var(--glass-bg);
-          color: var(--accent); font-size: 14px; font-weight: 500;
+          height: 38px; padding: 0 20px; border-radius: 10px;
+          border: 1px solid var(--accent-brd); background: var(--accent-dim);
+          color: var(--accent); font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer;
           transition: all 0.2s; white-space: nowrap;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .btn-register:hover:not(:disabled) { 
-          background: var(--bg-2);
-          border-color: var(--accent);
+          background: rgba(56, 189, 248, 0.25);
+          box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
+          transform: translateY(-2px);
         }
-        .btn-register:active:not(:disabled) { transform: translateY(1px); }
+        .btn-register:active:not(:disabled) { transform: translateY(0); }
         .btn-register:disabled { 
-          opacity: 0.3; cursor: not-allowed; 
-          background: transparent; border-color: var(--border); color: var(--text-2);
+          opacity: 0.4; cursor: not-allowed; 
+          background: var(--bg-3); border-color: var(--border); color: var(--text-2);
+          box-shadow: none;
         }
-        @media (max-width: 600px) { .btn-register { width: 100%; order: -1; } }
+        @media (max-width: 600px) { .btn-register { width: 100%; } }
       `}</style>
     </>
   );

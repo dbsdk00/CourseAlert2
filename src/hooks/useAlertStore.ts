@@ -22,7 +22,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 const API = import.meta.env.VITE_API_URL as string;
-const POLL_INTERVAL = 3000;
+const POLL_INTERVAL = 1000;
 
 export function useAlertStore() {
   const alertIdRef = useRef(0);
@@ -65,7 +65,7 @@ export function useAlertStore() {
         if ('serviceWorker' in navigator && 'PushManager' in window) {
           const registration = await navigator.serviceWorker.register('/sw.js');
           let sub = await registration.pushManager.getSubscription();
-          
+
           if (!sub) {
             const res = await fetch(`${API}/api/vapidPublicKey`);
             if (res.ok) {
@@ -92,17 +92,17 @@ export function useAlertStore() {
   const syncBackend = useCallback(async () => {
     try {
       let sub = pushSubRef.current;
-      
+
       // 구독 정보가 없다면 권한 요청 및 구독 시도 (사용자 상호작용 시점에 호출됨)
       if (!sub && 'serviceWorker' in navigator && 'PushManager' in window) {
         if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
           await Notification.requestPermission();
         }
-        
+
         if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
           const registration = await navigator.serviceWorker.ready;
           sub = await registration.pushManager.getSubscription();
-          
+
           if (!sub) {
             const res = await fetch(`${API}/api/vapidPublicKey`);
             if (res.ok) {
@@ -146,7 +146,8 @@ export function useAlertStore() {
       setAlerts(prev => {
         if (prev.length === 0) return prev;
 
-        prev.forEach(async (alert) => {
+        // 병렬로 모든 과목 체크하여 속도 극대화
+        Promise.all(prev.map(async (alert) => {
           try {
             const url = alert.code !== 'TIME'
               ? `${API}/api/courses/${alert.code}`
@@ -196,8 +197,8 @@ export function useAlertStore() {
                 setAlerts(prev2 => prev2.map(a => a.id === alert.id ? { ...a, status: 'monitoring', checks: a.checks + 1, lastChecked: ts() } : a));
               }
             }
-          } catch {}
-        });
+          } catch { }
+        }));
 
         return prev;
       });

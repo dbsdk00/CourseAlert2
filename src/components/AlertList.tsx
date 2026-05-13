@@ -11,17 +11,19 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
   return (
     <>
       <div className="sec-label">
-        <img src="/ling.png" style={{ width: 14, height: 14, opacity: 0.8 }} />
+        <span style={{
+          width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)',
+          boxShadow: '0 0 8px var(--accent-glow)'
+        }} />
         등록된 알림
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16, marginBottom: 36 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 36 }}>
         {alerts.length === 0 ? (
           <div className="glass-panel animate-slide-down" style={{
-            gridColumn: '1 / -1',
             borderRadius: 24, padding: '48px 24px', textAlign: 'center',
             borderStyle: 'dashed', borderColor: 'var(--border-md)'
           }}>
-            <img src="/ling.png" style={{ width: 40, height: 40, marginBottom: 16, opacity: 0.5 }} />
+            <img src="/ling.png" style={{ width: 44, height: 44, marginBottom: 16, opacity: 0.6 }} />
             <div style={{ fontSize: 14, color: 'var(--text-1)', lineHeight: 1.6 }}>
               아직 등록된 알림이 없어요<br />위 폼에서 과목을 검색하고 추가해보세요
             </div>
@@ -40,11 +42,14 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
       {logs.length > 0 && (
         <>
           <div className="sec-label">
-            <img src="/ling.png" style={{ width: 14, height: 14, opacity: 0.8 }} />
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%', background: 'var(--green)',
+              boxShadow: '0 0 8px var(--green-glow)'
+            }} />
             빈자리 발생 기록
           </div>
-          <div className="custom-scrollbar" style={{ 
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12, marginBottom: 36,
+          <div className="custom-scrollbar" style={{
+            display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36,
             maxHeight: 300, overflowY: 'auto', paddingRight: 8
           }}>
             {logs.map(log => (

@@ -6,11 +6,14 @@ self.addEventListener('push', function(event) {
       body: data.body,
       icon: '/icons/icon-192.png',
       badge: '/icons/icon-192.png',
-      tag: data.tag,
-      data: { url: data.url },
+      tag: data.tag || `vacancy-alert-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      data: { url: data.url || 'https://sugang.sungkyul.ac.kr' },
       requireInteraction: true,
+      renotify: true,
       vibrate: [200, 100, 200],
-      silent: false
+      actions: [
+        { action: 'open_url', title: '수강신청 바로가기' }
+      ]
     };
 
     event.waitUntil(

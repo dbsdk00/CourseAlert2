@@ -1,4 +1,10 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
   --bg-gradient-start: #060913;
@@ -6,41 +12,50 @@
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-border-glow: rgba(255, 255, 255, 0.15);
-  
+
   --bg-1: rgba(15, 23, 42, 0.6);
   --bg-2: rgba(30, 41, 59, 0.6);
   --bg-3: rgba(51, 65, 85, 0.6);
   --bg-4: rgba(71, 85, 105, 0.6);
-  
-  --border: rgba(255,255,255,0.08);
-  --border-md: rgba(255,255,255,0.15);
-  
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-md: rgba(255, 255, 255, 0.15);
+
   --text-0: #f8fafc;
   --text-1: #cbd5e1;
   --text-2: #94a3b8;
   --text-3: #475569;
-  
+
   --accent: #38bdf8;
   --accent-dim: rgba(56, 189, 248, 0.15);
   --accent-brd: rgba(56, 189, 248, 0.3);
   --accent-glow: rgba(56, 189, 248, 0.6);
-  
+
   --green: #34d399;
   --green-dim: rgba(52, 211, 153, 0.15);
   --green-brd: rgba(52, 211, 153, 0.3);
   --green-glow: rgba(52, 211, 153, 0.6);
-  
+
   --amber: #fbbf24;
   --amber-dim: rgba(251, 191, 36, 0.15);
   --amber-brd: rgba(251, 191, 36, 0.3);
   --amber-glow: rgba(251, 191, 36, 0.6);
-  
+
   --red: #f87171;
   --red-dim: rgba(248, 113, 113, 0.15);
   --red-brd: rgba(248, 113, 113, 0.3);
-  
+
   --mono: 'JetBrains Mono', 'Fira Code', monospace;
   --sans: 'Pretendard', 'Inter', -apple-system, sans-serif;
+}
+
+html, body {
+  height: 100dvh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
@@ -48,15 +63,27 @@ body {
   background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
   background-attachment: fixed;
   color: var(--text-0);
-  min-height: 100vh;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--text-3); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-2); }
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-2);
+}
 
 /* Glassmorphism Utility */
 .glass-panel {

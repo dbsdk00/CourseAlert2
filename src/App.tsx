@@ -32,8 +32,31 @@ export default function App() {
 
   useEffect(() => {
     store.setOnVacancy((triggered: AlertItem) => {
-      setPopupAlerts(prev => [...prev, triggered]); // ← 스택에 추가
-      playBeep(); // ← 알림 소리 재생
+      // 알림 스택에 추가 (중복 방지 및 안전한 업데이트)
+      setPopupAlerts(currentStack => {
+        if (currentStack.some(a => a.id === triggered.id)) return currentStack;
+        return [...currentStack, triggered];
+      });
+
+      playBeep();
+
+      // 브라우저 알림 발송 (개별 고유 태그로 스태킹 보장)
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        const registrationUrl = 'https://sugang.sungkyul.ac.kr';
+        const n = new Notification(`${triggered.name} 빈자리 발견!`, {
+          body: `[${triggered.code}] 과목에 빈자리가 생겼습니다. 클릭하여 신청하세요!`,
+          icon: '/icons/icon-192.png',
+          tag: `vacancy-${triggered.id}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          renotify: true,
+          data: { url: registrationUrl }
+        });
+
+        n.onclick = (e) => {
+          e.preventDefault();
+          window.focus();
+          window.open(registrationUrl, '_blank');
+        };
+      }
     });
   }, [store.setOnVacancy]);
 
