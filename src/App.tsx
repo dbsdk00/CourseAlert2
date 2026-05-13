@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 import { useAlertStore } from './hooks/useAlertStore';
 import TopBar from './components/TopBar';
 import RegisterForm from './components/RegisterForm';
 import AlertList from './components/AlertList';
 import DemoBar from './components/DemoBar';
-import Popup from './components/Popup';
 import type { AlertItem } from './types';
 
 function playBeep() {
