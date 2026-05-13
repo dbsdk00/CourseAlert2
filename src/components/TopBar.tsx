@@ -7,7 +7,6 @@ export default function TopBar({ monitoringCount, serverOk }: Props) {
   const serverColor = serverOk === null ? 'var(--text-2)' : serverOk ? 'var(--text-2)' : 'var(--red)';
   const serverLabel = serverOk === null ? '연결 확인 중' : serverOk ? '서버 연결됨' : '서버 연결 실패';
   const serverBg = serverOk === null ? 'var(--bg-2)' : serverOk ? 'var(--bg-3)' : 'var(--red-dim)';
-  const serverBrd = 'none';
 
   return (
     <header style={{
