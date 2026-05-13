@@ -213,6 +213,10 @@ export default function RegisterForm({ onRegister }: Props) {
               <button
                 className="btn-permission"
                 onClick={async () => {
+                  if (Notification.permission === 'denied') {
+                    alert('알림 권한이 차단되어 있습니다.\n\n[해제 방법]\n1. 브라우저 주소창 왼쪽의 아이콘(자물쇠 또는 설정) 클릭\n2. 알림 권한을 "허용"으로 변경\n3. 페이지를 새로고침 해주세요.');
+                    return;
+                  }
                   const perm = await Notification.requestPermission();
                   if (perm === 'granted') window.location.reload();
                 }}
