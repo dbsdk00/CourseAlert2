@@ -2,7 +2,7 @@ import type { AlertItem } from '../types';
 
 interface Props {
   alert: AlertItem;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 export default function AlertCard({ alert: a, onDelete }: Props) {

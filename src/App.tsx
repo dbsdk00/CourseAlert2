@@ -28,7 +28,7 @@ function playBeep() {
 export default function App() {
   const store = useAlertStore();
   const [isLight, setIsLight] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   const toggleTheme = () => {
     setIsLight(!isLight);
@@ -75,7 +75,6 @@ export default function App() {
       <div className="ambient" />
       <div className="shell">
         <TopBar 
-          monitoringCount={store.monitoringCount} 
           serverOk={store.serverOk} 
           isLight={isLight}
           onToggleTheme={toggleTheme}
