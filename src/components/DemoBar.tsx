@@ -9,14 +9,14 @@ export default function DemoBar({ onReset }: Props) {
       transform: 'translateX(-50%)',
       zIndex: 200,
       display: 'flex', alignItems: 'center', gap: 12,
-      background: 'var(--glass-bg)', border: '1px solid var(--glass-border-glow)',
+      background: 'var(--bg-1)', border: '1px solid var(--bg-3)',
       borderRadius: 99, padding: '10px 12px 10px 20px',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+      boxShadow: 'none',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
       whiteSpace: 'nowrap',
     }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)', fontFamily: 'var(--mono)', textShadow: '0 0 8px var(--accent-glow)' }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)', fontFamily: 'var(--mono)' }}>
         demo
       </span>
       <button

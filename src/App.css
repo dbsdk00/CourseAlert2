@@ -12,9 +12,15 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 480px) {
+  .shell {
+    padding-top: 100px;
+  }
+}
+
 @media (max-width: 600px) {
   .shell {
-    padding: 0 12px 30px;
+    padding: 88px 12px 30px;
   }
 }
 

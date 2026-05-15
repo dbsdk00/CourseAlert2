@@ -30,7 +30,7 @@ const inputStyle: React.CSSProperties = {
   boxSizing: 'border-box',
   WebkitAppearance: 'none',
   appearance: 'none',
-  transition: 'all 0.2s',
+  transition: 'border-color 0.15s ease-out, background-color 0.15s ease-out',
 };
 
 const selectStyle: React.CSSProperties = {
@@ -65,7 +65,7 @@ export default function SearchInput(props: Props) {
             fontSize: 12, fontWeight: 500, fontFamily: 'var(--sans)',
             transition: 'all 0.2s',
             background: mode === m ? 'var(--bg-4)' : 'transparent',
-            color: mode === m ? 'var(--accent)' : 'var(--text-3)',
+            color: mode === m ? 'var(--text-0)' : 'var(--text-2)',
           }}>
             {m === 'course' ? '과목 탐색' : '시간대 탐색'}
           </button>
@@ -123,8 +123,13 @@ export default function SearchInput(props: Props) {
           </>
         )}
 
-        <button className="btn-search" onClick={onSearch} disabled={searchState === 'loading'}>
-          {searchState === 'loading' ? '검색 중…' : '검색'}
+        <button className="btn-search" onClick={onSearch} disabled={searchState === 'loading'} style={{ width: 44, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {searchState === 'loading' ? '...' : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          )}
         </button>
       </div>
 
@@ -138,20 +143,20 @@ export default function SearchInput(props: Props) {
           border: 1px solid rgba(212, 175, 55, 0.3) !important;
         }
         .input-focus:focus {
-          border: 1px solid var(--accent) !important;
+          border: 1px solid #d4af37 !important;
           background-color: #1e1e1e !important;
-          box-shadow: 0 0 0 2px var(--accent-dim);
+          box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
         }
         .btn-search {
           height: 38px; padding: 0 20px; border-radius: 10px;
-          border: none; background: var(--accent-dim);
-          color: var(--accent); font-size: 13px; font-weight: 600;
+          border: none; background: transparent;
+          color: var(--text-2); font-size: 13px; font-weight: 600;
           font-family: var(--sans); cursor: pointer; white-space: nowrap;
           transition: all 0.2s; flex-shrink: 0; align-self: flex-end;
         }
         .btn-search:hover {
-          background: rgba(56, 189, 248, 0.25);
-          box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+          background: var(--bg-3);
+          color: var(--text-0);
         }
         .btn-search:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
       `}</style>

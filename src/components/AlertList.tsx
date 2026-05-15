@@ -11,17 +11,20 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
   return (
     <>
       <div className="sec-label">
-        <span style={{
-          width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)',
-          boxShadow: '0 0 8px var(--accent-glow)'
-        }} />
         등록된 알림
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 36 }}>
+      <div className="glass-panel" style={{ 
+        padding: '24px', 
+        borderRadius: 24, 
+        marginBottom: 36,
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: 16 
+      }}>
         {alerts.length === 0 ? (
-          <div className="glass-panel animate-slide-down" style={{
-            borderRadius: 24, padding: '48px 24px', textAlign: 'center',
-            background: 'var(--bg-1)'
+          <div style={{
+            padding: '48px 24px', textAlign: 'center',
+            background: 'transparent'
           }}>
             <img src="/ling.png" style={{ width: '38.6px', height: '38.6px', marginBottom: 16, opacity: 0.4 }} />
             <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, fontWeight: 500 }}>
@@ -42,9 +45,6 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
       {logs.length > 0 && (
         <>
           <div className="sec-label" style={{ opacity: 0.5, marginBottom: 12 }}>
-            <span style={{
-              width: 6, height: 6, borderRadius: '50%', background: 'var(--text-3)',
-            }} />
             빈자리 발생 기록
           </div>
           <div className="custom-scrollbar" style={{
@@ -74,8 +74,8 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
 
       <style>{`
         .sec-label {
-          font-size: 12px; font-weight: 600; letter-spacing: 1px;
-          text-transform: uppercase; color: var(--text-1);
+          font-size: 16.6px; font-weight: 700; letter-spacing: 1px;
+          text-transform: uppercase; color: var(--text-0);
           margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
         }
         .sec-label::after {

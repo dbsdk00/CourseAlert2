@@ -1,13 +1,14 @@
-import type { CourseResult } from '../types';
+import type { CourseResult, AlertItem } from '../types';
 
 interface Props {
   results: CourseResult[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   searchState: 'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate';
+  alerts: AlertItem[];
 }
 
-export default function SearchResult({ results, selectedId, onSelect, searchState }: Props) {
+export default function SearchResult({ results, selectedId, onSelect, searchState, alerts }: Props) {
   return (
     <>
       {searchState === 'empty' && (
@@ -58,22 +59,24 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
               const isFull = course.enrolled >= course.limit;
               const remain = Math.max(0, course.limit - course.enrolled);
               const isSelected = selectedId === course.courseId;
+              const isRegistered = alerts.some(a => a.code === course.courseId);
 
               return (
                 <div
                   key={course.courseId}
-                  onClick={() => onSelect(course.courseId)}
+                  onClick={() => !isRegistered && onSelect(course.courseId)}
                   style={{
                     padding: '16px 18px', borderRadius: 12,
-                    cursor: 'pointer',
+                    cursor: isRegistered ? 'default' : 'pointer',
                     background: isSelected ? 'var(--bg-4)' : 'var(--bg-2)',
+                    opacity: isRegistered ? 0.6 : 1,
                     transition: 'all 0.2s ease',
                     display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', gap: 12,
                     userSelect: 'none',
                     flexShrink: 0,
                   }}
-                  className="result-item"
+                  className={isRegistered ? "" : "result-item"}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -94,13 +97,14 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.4, fontWeight: 400 }}>
                       {course.professor} · {course.day}요일 {course.time}교시
+                      {isRegistered && <span style={{ marginLeft: 8, color: 'var(--accent)', fontWeight: 600 }}>[이미 등록됨]</span>}
                     </div>
                   </div>
 
                   <div style={{
                     flexShrink: 0, fontSize: 12, fontWeight: 500, textAlign: 'center',
                     color: isFull ? 'var(--red)' : 'var(--accent)',
-                    background: isFull ? 'var(--red-dim)' : 'var(--accent-dim)',
+                    background: isFull ? 'var(--bg-4)' : 'var(--bg-3)',
                     borderRadius: 8, padding: '6px 12px',
                   }}>
                     {isFull ? '마감' : `여석 ${remain}`}

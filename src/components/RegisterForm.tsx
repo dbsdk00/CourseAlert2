@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import type { RegisterMode, RegisterParams, CourseResult } from '../types';
+import type { RegisterMode, RegisterParams, CourseResult, AlertItem } from '../types';
 import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
 
 interface Props {
   onRegister: (params: RegisterParams) => boolean;
+  alerts: AlertItem[];
 }
 
-export default function RegisterForm({ onRegister }: Props) {
+export default function RegisterForm({ onRegister, alerts }: Props) {
   const [mode, setMode] = useState<RegisterMode>('course');
 
   // 모드 A
@@ -158,14 +159,10 @@ export default function RegisterForm({ onRegister }: Props) {
   return (
     <>
       <div style={{
-        fontSize: 12, fontWeight: 600, letterSpacing: '1px',
-        textTransform: 'uppercase', color: 'var(--accent)',
+        fontSize: '16.6px', fontWeight: 700, letterSpacing: '1px',
+        textTransform: 'uppercase', color: 'var(--text-0)',
         marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12,
       }}>
-        <span style={{
-          width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)',
-          boxShadow: '0 0 8px var(--accent-glow)'
-        }} />
         알림 등록
       </div>
 
@@ -190,24 +187,13 @@ export default function RegisterForm({ onRegister }: Props) {
           selectedId={selectedId}
           onSelect={setSelectedId}
           searchState={searchState}
+          alerts={alerts}
         />
 
         {/* 하단 버튼 영역 */}
         <div className="form-bottom" style={{
           marginTop: 20, paddingTop: 16
         }}>
-          <span style={{ 
-            fontSize: 12, color: 'var(--text-2)', display: 'flex', alignItems: 'center', 
-            gap: 6, whiteSpace: 'nowrap', fontWeight: 500
-          }}>
-            {!selectedId && (
-              mode === 'course' ? (
-                <><span style={{ opacity: 0.6 }}></span> 과목 코드와 분반을 입력하고 검색해주세요</>
-              ) : (
-                <><span style={{ opacity: 0.6 }}></span> 요일과 교시를 선택하고 검색해주세요</>
-              )
-            )}
-          </span>
           <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'flex-end' }}>
             {typeof Notification !== 'undefined' && Notification.permission !== 'granted' ? (
               <button
@@ -257,13 +243,12 @@ export default function RegisterForm({ onRegister }: Props) {
           border: 1px solid var(--accent-brd); background: var(--accent);
           color: #000; font-size: 14px; font-weight: 800;
           font-family: var(--sans); cursor: pointer; transition: all 0.2s;
-          box-shadow: 0 0 15px var(--accent-glow);
           animation: pulse 2s infinite;
         }
         @keyframes pulse {
-          0% { transform: scale(1); box-shadow: 0 0 15px var(--accent-glow); }
-          50% { transform: scale(1.02); box-shadow: 0 0 25px var(--accent-glow); }
-          100% { transform: scale(1); box-shadow: 0 0 15px var(--accent-glow); }
+          0% { transform: scale(1); }
+          50% { transform: scale(1.02); }
+          100% { transform: scale(1); }
         }
         .btn-direct-link {
           height: 38px; padding: 0 20px; border-radius: 10px;
@@ -277,13 +262,13 @@ export default function RegisterForm({ onRegister }: Props) {
           transform: translateY(-2px);
         }
         .btn-direct-link:disabled {
-          opacity: 0.3; cursor: not-allowed;
-          background: var(--bg-3); color: var(--text-3);
+          opacity: 0.5; cursor: not-allowed;
+          background: var(--bg-4); color: var(--text-2);
         }
         .btn-register {
           height: 38px; padding: 0 24px; border-radius: 10px;
           border: none; background: var(--accent);
-          color: #ffffff; font-size: 13px; font-weight: 700;
+          color: var(--text-0); font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer;
           transition: all 0.2s; white-space: nowrap;
           flex: 1; max-width: 160px;
@@ -294,8 +279,8 @@ export default function RegisterForm({ onRegister }: Props) {
         }
         .btn-register:active:not(:disabled) { transform: translateY(0); }
         .btn-register:disabled { 
-          opacity: 0.2; cursor: not-allowed; 
-          background: var(--bg-3); color: var(--text-3);
+          opacity: 0.5; cursor: not-allowed; 
+          background: var(--bg-4); color: var(--text-2);
         }
         @media (max-width: 600px) { .btn-register { width: 100%; } }
       `}</style>
