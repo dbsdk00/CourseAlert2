@@ -27,13 +27,13 @@
   --text-3: #666666;
 
   /* Muted Yellow Accent */
-  --accent: #d4af37;
-  --accent-dim: rgba(212, 175, 55, 0.1);
+  --accent: #FACC15;
+  --accent-dim: rgba(250, 204, 21, 0.1);
 
   --green: #4ade80;
   --green-dim: rgba(74, 222, 128, 0.05);
   --green-muted: #2d4a35;
-  --amber: #d4af37;
+  --amber: #FACC15;
   --red: #fb7185;
   --red-dim: rgba(251, 113, 133, 0.08);
 
@@ -55,9 +55,9 @@ html.light {
   --glass-bg: rgba(0, 0, 0, 0.03);
 }
 
-html {
+html, body {
   height: 100%;
-  overscroll-behavior: none;
+  overscroll-behavior-y: auto;
 }
 
 body {
@@ -66,9 +66,6 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-}
-
-body {
   font-family: var(--sans);
   background: var(--bg-gradient-start);
   color: var(--text-0);

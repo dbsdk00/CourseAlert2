@@ -8,7 +8,7 @@ interface Props {
   timeFrom: string; setTimeFrom: (v: string) => void;
   timeTo: string; setTimeTo: (v: string) => void;
   onSearch: () => void;
-  searchState: 'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate';
+  searchState: 'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate' | 'empty_input';
   resetSearch: (m: RegisterMode) => void;
   onInputChanged: () => void;
 }
@@ -123,7 +123,12 @@ export default function SearchInput(props: Props) {
           </>
         )}
 
-        <button className="btn-search" onClick={onSearch} disabled={searchState === 'loading'} style={{ width: 44, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button 
+          className="btn-search" 
+          onClick={onSearch} 
+          disabled={searchState === 'loading' || (typeof Notification !== 'undefined' && Notification.permission !== 'granted')} 
+          style={{ width: 44, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
           {searchState === 'loading' ? '...' : (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"></circle>

@@ -4,13 +4,14 @@ interface Props {
   results: CourseResult[];
   selectedId: string | null;
   onSelect: (id: string) => void;
-  searchState: 'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate';
+  searchState: 'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate' | 'empty_input';
   alerts: AlertItem[];
 }
 
 export default function SearchResult({ results, selectedId, onSelect, searchState, alerts }: Props) {
   return (
     <>
+      {/* ... (생략된 에러/알림 영역) */}
       {searchState === 'empty' && (
         <div style={{
           padding: '16px 20px', borderRadius: 12, marginBottom: 20,
@@ -18,6 +19,16 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
           border: '1px dashed var(--border-md)', textAlign: 'center'
         }} className="animate-slide-down">
           일치하는 수업이 없어요. 입력 정보를 다시 확인해주세요.
+        </div>
+      )}
+
+      {searchState === 'empty_input' && (
+        <div style={{
+          padding: '16px 20px', borderRadius: 12, marginBottom: 20,
+          background: 'var(--bg-2)', color: 'var(--text-1)', fontSize: 13,
+          border: '1px dashed var(--border-md)', textAlign: 'center'
+        }} className="animate-slide-down">
+          검색할 정보를 입력해주세요.
         </div>
       )}
 
@@ -57,7 +68,6 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
           }}>
             {results.map(course => {
               const isFull = course.enrolled >= course.limit;
-              const remain = Math.max(0, course.limit - course.enrolled);
               const isSelected = selectedId === course.courseId;
               const isRegistered = alerts.some(a => a.code === course.courseId);
 
@@ -69,7 +79,7 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                     padding: '16px 18px', borderRadius: 12,
                     cursor: isRegistered ? 'default' : 'pointer',
                     background: isSelected ? 'var(--bg-4)' : 'var(--bg-2)',
-                    opacity: isRegistered ? 0.6 : 1,
+                    opacity: isRegistered ? 0.7 : 1,
                     transition: 'all 0.2s ease',
                     display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', gap: 12,
@@ -86,6 +96,7 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                       }}>
                         {course.name}
                       </span>
+                      {isRegistered && <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>[등록됨]</span>}
                       <span style={{
                         fontSize: 10, color: 'var(--text-3)',
                         background: 'var(--bg-4)', borderRadius: 4,
@@ -97,20 +108,16 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.4, fontWeight: 400 }}>
                       {course.professor} · {course.day}요일 {course.time}교시
-                      {isRegistered && <span style={{ marginLeft: 8, color: 'var(--accent)', fontWeight: 600 }}>[이미 등록됨]</span>}
                     </div>
                   </div>
 
                   <div style={{
-                    flexShrink: 0, fontSize: 12, fontWeight: 500, textAlign: 'center',
-                    color: isFull ? 'var(--red)' : 'var(--accent)',
-                    background: isFull ? 'var(--bg-4)' : 'var(--bg-3)',
-                    borderRadius: 8, padding: '6px 12px',
+                    flexShrink: 0, width: 62, fontSize: 13, fontWeight: 700, textAlign: 'right',
+                    letterSpacing: '-0.5px',
+                    fontFamily: 'var(--mono)',
                   }}>
-                    {isFull ? '마감' : `여석 ${remain}`}
-                    <div style={{ fontSize: 10, fontWeight: 400, marginTop: 2, opacity: 0.6 }}>
-                      {course.enrolled}/{course.limit}
-                    </div>
+                    <span style={{ color: isFull ? '#8E8E93' : '#facc15' }}>{course.enrolled}</span>
+                    <span style={{ color: '#8E8E93', fontWeight: 400 }}> / {course.limit}</span>
                   </div>
                 </div>
               );

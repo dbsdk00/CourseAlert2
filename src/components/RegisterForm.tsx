@@ -23,9 +23,14 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
   // 검색 상태
   const [results, setResults] = useState<CourseResult[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [searchState, setSearchState] = useState<'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate'>('idle');
+  const [searchState, setSearchState] = useState<'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate' | 'empty_input'>('idle');
 
   const handleSearch = async () => {
+    if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
+      alert('검색 전 먼저 알림 권한을 허용해 주세요!');
+      return;
+    }
+
     setResults([]);
     setSelectedId(null);
     setSearchState('loading');
@@ -34,7 +39,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
       const base = import.meta.env.VITE_API_URL;
 
       if (mode === 'course') {
-        if (!code.trim() || !division.trim()) { setSearchState('idle'); return; }
+        if (!code.trim() || !division.trim()) { setSearchState('empty_input'); return; }
         const courseId = `${code.trim()}-${division.trim()}`;
         const res = await fetch(`${base}/api/courses/${courseId}`);
         if (!res.ok) { setSearchState('empty'); return; }
@@ -42,6 +47,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
         setResults([course]);
         setSearchState('done');
       } else {
+        // 시간대 탐색은 항상 값이 있음 (기본값 존재)
         const res = await fetch(`${base}/api/courses?day=${day}`);
         const all: CourseResult[] = await res.json();
 
@@ -252,14 +258,13 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
         }
         .btn-direct-link {
           height: 38px; padding: 0 20px; border-radius: 10px;
-          border: none; background: var(--accent-dim);
-          color: var(--accent); font-size: 13px; font-weight: 700;
+          border: none; background: var(--accent);
+          color: #1a1a1a; font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer; transition: all 0.2s; white-space: nowrap;
           flex: 1; max-width: 160px;
         }
         .btn-direct-link:hover:not(:disabled) {
-          background: rgba(250, 204, 21, 0.2);
-          transform: translateY(-2px);
+          filter: brightness(0.8);
         }
         .btn-direct-link:disabled {
           opacity: 0.5; cursor: not-allowed;
@@ -268,16 +273,15 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
         .btn-register {
           height: 38px; padding: 0 24px; border-radius: 10px;
           border: none; background: var(--accent);
-          color: var(--text-0); font-size: 13px; font-weight: 700;
+          color: #1a1a1a; font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer;
           transition: all 0.2s; white-space: nowrap;
           flex: 1; max-width: 160px;
         }
         .btn-register:hover:not(:disabled) { 
-          transform: translateY(-1px);
-          filter: brightness(0.9);
+          filter: brightness(0.8);
         }
-        .btn-register:active:not(:disabled) { transform: translateY(0); }
+        .btn-register:active:not(:disabled) { opacity: 0.8; }
         .btn-register:disabled { 
           opacity: 0.5; cursor: not-allowed; 
           background: var(--bg-4); color: var(--text-2);

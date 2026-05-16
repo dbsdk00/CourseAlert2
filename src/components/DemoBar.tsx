@@ -21,11 +21,19 @@ export default function DemoBar({ onReset }: Props) {
       </span>
       <button
         onClick={onReset}
+        onTouchStart={(e) => {
+          e.currentTarget.style.transform = 'scale(0.95)';
+        }}
+        onTouchEnd={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          onReset();
+        }}
         style={{
           height: 36, padding: '0 18px', borderRadius: 99,
           border: '1px solid var(--border-md)', background: 'var(--bg-2)',
           color: 'var(--text-0)', fontSize: 13, fontWeight: 600,
-          fontFamily: 'var(--sans)', cursor: 'pointer', transition: 'all 0.2s',
+          fontFamily: 'var(--sans)', cursor: 'pointer', transition: 'all 0.1s',
+          touchAction: 'manipulation'
         }}
         className="demo-btn"
       >

@@ -43,31 +43,64 @@ export default function App() {
   };
 
   useEffect(() => {
+    let startY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      if (window.scrollY <= 1) startY = e.touches[0].pageY;
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      const y = e.touches[0].pageY;
+      if (window.scrollY <= 1 && y > startY + 120) {
+        window.location.reload();
+      }
+    };
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+
     store.setOnVacancy(async (triggered: AlertItem) => {
+      console.log('Vacancy detected:', triggered.name);
       playBeep();
 
       // 브라우저 시스템 알림 발송 (앱 외부에서도 보이도록)
       if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         const registrationUrl = 'https://sugang.sungkyul.ac.kr';
         const title = `${triggered.name} 빈자리 발견!`;
-        const options = {
+        const options: any = {
           body: `[${triggered.code}] 빈자리가 생겼습니다. 클릭하여 신청하세요!`,
           icon: '/icons/icon-192.png',
           badge: '/icons/icon-192.png',
-          tag: `vacancy-${triggered.id}`, 
+          tag: `vacancy-${triggered.id}-${Date.now()}`, // 태그를 유니크하게 하여 매번 팝업 보장
           renotify: true,
           vibrate: [200, 100, 200],
-          data: { url: registrationUrl }
+          requireInteraction: true,
+          data: { url: registrationUrl, timestamp: Date.now() }
         };
 
-        if ('serviceWorker' in navigator) {
-          const reg = await navigator.serviceWorker.ready;
-          reg.showNotification(title, options);
-        } else {
+        try {
+          if ('serviceWorker' in navigator) {
+            // ready가 너무 오래 걸릴 수 있으므로 타임아웃 1초 적용
+            const swPromise = navigator.serviceWorker.ready;
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject('SW timeout'), 1000));
+            
+            const reg = await Promise.race([swPromise, timeoutPromise]) as ServiceWorkerRegistration;
+            await reg.showNotification(title, options);
+            console.log('SW notification sent');
+          } else {
+            new Notification(title, options);
+            console.log('Window notification sent');
+          }
+        } catch (err) {
+          console.warn('Notification fallback triggered:', err);
           new Notification(title, options);
         }
+      } else {
+        console.warn('Notification permission not granted or API missing');
       }
     });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
   }, [store.setOnVacancy]);
 
   return (
@@ -121,7 +154,7 @@ export default function App() {
                 onClick={confirmDelete}
                 style={{
                   flex: 1, height: 48, borderRadius: 14, border: 'none',
-                  background: 'var(--red)', color: 'var(--text-0)', fontWeight: 700, cursor: 'pointer'
+                  background: 'var(--accent)', color: '#000', fontWeight: 700, cursor: 'pointer'
                 }}
               >
                 삭제

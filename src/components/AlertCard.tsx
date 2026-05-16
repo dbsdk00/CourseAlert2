@@ -7,8 +7,7 @@ interface Props {
 
 export default function AlertCard({ alert: a, onDelete }: Props) {
   const isFull = a.current >= a.max;
-  const remain = Math.max(0, a.max - a.current);
-  
+
   const borderColor = 'var(--glass-border)';
   const bg = 'var(--glass-bg)';
 
@@ -19,7 +18,7 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
   };
 
   return (
-    <div className="glass-panel alert-card" 
+    <div className="glass-panel alert-card"
       onClick={handleCardClick}
       style={{
         background: bg,
@@ -55,15 +54,12 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
         </div>
 
         <div style={{
-          flexShrink: 0, fontSize: 12, fontWeight: 500, textAlign: 'center',
-          color: isFull ? 'var(--red)' : 'var(--accent)',
-          background: isFull ? 'var(--bg-4)' : 'var(--bg-3)',
-          borderRadius: 8, padding: '6px 12px',
+          flexShrink: 0, width: 62, fontSize: 13, fontWeight: 700, textAlign: 'right',
+          letterSpacing: '-0.5px',
+          fontFamily: 'var(--mono)',
         }}>
-          {isFull ? '마감' : `여석 ${remain}`}
-          <div style={{ fontSize: 10, fontWeight: 400, marginTop: 2, opacity: 0.6 }}>
-            {a.current}/{a.max}
-          </div>
+          <span style={{ color: isFull ? '#8E8E93' : '#facc15' }}>{a.current}</span>
+          <span style={{ color: '#8E8E93', fontWeight: 400 }}> / {a.max}</span>
         </div>
       </div>
 
@@ -77,16 +73,16 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
             { label: '등록', val: a.regTime },
             { label: '갱신', val: a.lastChecked },
           ].map(s => (
-            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--text-2)' }}>
-              {s.label} <span style={{ fontFamily: 'var(--mono)', color: 'var(--text-1)', fontWeight: 500 }}>{s.val}</span>
+            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--text-3)' }}>
+              {s.label} <span style={{ fontFamily: 'var(--mono)', color: 'var(--text-3)', fontWeight: 400 }}>{s.val}</span>
             </div>
           ))}
         </div>
-        <button 
+        <button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(a.id);
-          }} 
+          }}
           style={deleteBtnStyle} title="삭제" className="action-btn delete-btn"
         >
           ✕
