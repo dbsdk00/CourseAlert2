@@ -22,7 +22,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 const API = import.meta.env.VITE_API_URL as string;
-const POLL_INTERVAL = 400;
+const POLL_INTERVAL = 2000;
 
 export function useAlertStore() {
   const alertIdRef = useRef(0);
