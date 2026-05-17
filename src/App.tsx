@@ -43,19 +43,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    let startY = 0;
-    const handleTouchStart = (e: TouchEvent) => {
-      if (window.scrollY <= 1) startY = e.touches[0].pageY;
-    };
-    const handleTouchMove = (e: TouchEvent) => {
-      const y = e.touches[0].pageY;
-      if (window.scrollY <= 1 && y > startY + 120) {
-        window.location.reload();
-      }
-    };
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-
     store.setOnVacancy(async (triggered: AlertItem) => {
       console.log('Vacancy detected:', triggered.name);
       playBeep();
@@ -96,11 +83,6 @@ export default function App() {
         console.warn('Notification permission not granted or API missing');
       }
     });
-
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-    };
   }, [store.setOnVacancy]);
 
   return (
@@ -118,6 +100,36 @@ export default function App() {
           logs={store.logs}
           onDelete={(id) => setDeleteTargetId(id)}
         />
+
+        {/* Footer */}
+        <footer style={{
+          marginTop: 24,
+          padding: '24px 0 40px',
+          borderTop: '1px solid var(--bg-3)',
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          opacity: 0.8
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 16,
+            fontSize: 12,
+            fontWeight: 500,
+            color: 'var(--text-3)'
+          }}>
+            <a href="#terms" onClick={(e) => { e.preventDefault(); alert('이용약관\n\n본 서비스는 학내 수강신청 빈자리 알림용 개인 프로젝트이며, 상업적 이용 및 과도한 트래픽 유발을 금지합니다.'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">이용약관</a>
+            <span style={{ color: 'var(--bg-3)' }}>|</span>
+            <a href="#privacy" onClick={(e) => { e.preventDefault(); alert('개인정보처리방침\n\n본 서비스는 별도의 회원가입 절차가 없으며, 사용자의 브라우저 알림 권한 및 저장된 데이터는 로컬 브라우저(LocalStorage) 내에서만 처리됩니다.'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">개인정보처리방침</a>
+            <span style={{ color: 'var(--bg-3)' }}>|</span>
+            <a href="#contact" onClick={(e) => { e.preventDefault(); alert('문의하기\n\n서비스 관련 피드백 및 오류 제보는 개발자 이메일(support@coursealert.com)로 문의해 주세요.'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">문의하기</a>
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'var(--mono)' }}>
+            © {new Date().getFullYear()} CourseAlert. All rights reserved.
+          </div>
+        </footer>
       </div>
       <DemoBar onReset={store.resetAll} />
 
@@ -168,6 +180,9 @@ export default function App() {
         @keyframes modalIn {
           from { opacity: 0; transform: scale(0.9) translateY(10px); }
           to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .footer-link:hover {
+          color: var(--accent) !important;
         }
       `}</style>
     </>

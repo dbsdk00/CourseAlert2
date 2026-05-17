@@ -107,7 +107,7 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
 const deleteBtnStyle: React.CSSProperties = {
   width: 24, height: 24, borderRadius: 6,
   border: 'none', background: 'var(--bg-2)',
-  color: 'var(--text-3)', fontSize: 11, cursor: 'pointer',
+  color: 'var(--text-3)', fontSize: 14, cursor: 'pointer',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   fontFamily: 'var(--sans)',
 };

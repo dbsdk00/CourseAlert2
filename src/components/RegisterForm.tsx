@@ -24,6 +24,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
   const [results, setResults] = useState<CourseResult[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchState, setSearchState] = useState<'idle' | 'loading' | 'done' | 'empty' | 'error' | 'duplicate' | 'empty_input'>('idle');
+  const [toast, setToast] = useState<string | null>(null);
 
   const handleSearch = async () => {
     if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
@@ -142,6 +143,9 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
       return;
     }
 
+    setToast(`${selected.name} 과목의 알림이 등록되었습니다! 🔔`);
+    setTimeout(() => setToast(null), 3000);
+
     setResults([]);
     setSelectedId(null);
     setSearchState('idle');
@@ -164,11 +168,16 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
 
   return (
     <>
-      <div style={{
-        fontSize: '16.6px', fontWeight: 700, letterSpacing: '1px',
-        textTransform: 'uppercase', color: 'var(--text-0)',
-        marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12,
-      }}>
+      {toast && (
+        <div className="custom-toast animate-toast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>{toast}</span>
+        </div>
+      )}
+
+      <div className="sec-label">
         알림 등록
       </div>
 
@@ -287,6 +296,34 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
           background: var(--bg-4); color: var(--text-2);
         }
         @media (max-width: 600px) { .btn-register { width: 100%; } }
+        .custom-toast {
+          position: fixed;
+          top: 24px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(30, 30, 30, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(250, 204, 21, 0.4);
+          color: var(--text-0);
+          padding: 12px 20px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13.5px;
+          font-weight: 600;
+          z-index: 9999;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+          pointer-events: none;
+        }
+        @keyframes toastIn {
+          from { opacity: 0; transform: translate(-50%, -15px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-toast {
+          animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
       `}</style>
     </>
   );

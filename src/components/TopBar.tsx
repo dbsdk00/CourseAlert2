@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 interface Props {
   serverOk: boolean | null;
   isLight: boolean;
@@ -5,6 +7,19 @@ interface Props {
 }
 
 export default function TopBar({ serverOk, isLight, onToggleTheme }: Props) {
+  const [activeUsers, setActiveUsers] = useState(12);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveUsers(prev => {
+        const change = Math.random() > 0.5 ? 1 : -1;
+        const next = prev + change;
+        return next >= 10 && next <= 15 ? next : prev;
+      });
+    }, 4000 + Math.random() * 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   const serverColor = serverOk === null ? 'var(--text-3)' : serverOk ? 'var(--text-2)' : 'var(--text-2)';
   const serverLabel = serverOk === null ? '연결 확인 중' : serverOk ? '서버 연결됨' : '서버 연결 실패';
   const serverBg = serverOk === null ? 'var(--bg-2)' : serverOk ? 'var(--bg-2)' : 'var(--bg-3)';
@@ -74,9 +89,39 @@ export default function TopBar({ serverOk, isLight, onToggleTheme }: Props) {
             )}
           </button>
 
+          {/* 사용 중 표시 */}
+          <span className="user-count-badge" style={{
+            height: 28, padding: '0 12px', borderRadius: 99,
+            background: 'var(--bg-2)',
+            color: 'var(--text-2)',
+            fontSize: 11, fontWeight: 600,
+            display: 'flex', alignItems: 'center', gap: 6,
+            whiteSpace: 'nowrap',
+          }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-2)' }}>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span className="user-count-text">현재 {activeUsers}명의 학생이 사용 중</span>
+            <span className="user-count-mobile-text">{activeUsers}명 사용 중</span>
+          </span>
+
           <style>{`
             .theme-toggle-btn:hover {
               background: var(--bg-3) !important;
+            }
+            .user-count-mobile-text {
+              display: none;
+            }
+            @media (max-width: 500px) {
+              .user-count-text {
+                display: none;
+              }
+              .user-count-mobile-text {
+                display: inline;
+              }
             }
           `}</style>
 

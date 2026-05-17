@@ -91,7 +91,7 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{
-                        fontSize: 15, fontWeight: 500, color: 'var(--text-0)',
+                        fontSize: 15, fontWeight: 700, color: 'var(--text-0)',
                         whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                       }}>
                         {course.name}

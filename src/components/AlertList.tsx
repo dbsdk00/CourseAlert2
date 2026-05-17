@@ -14,8 +14,8 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
         등록된 알림
       </div>
       <div className="glass-panel" style={{ 
-        padding: '24px', 
-        borderRadius: 24, 
+        padding: '20px 24px', 
+        borderRadius: 20, 
         marginBottom: 36,
         display: 'flex', 
         flexDirection: 'column', 
@@ -73,14 +73,6 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
       )}
 
       <style>{`
-        .sec-label {
-          font-size: 16.6px; font-weight: 700; letter-spacing: 1px;
-          text-transform: uppercase; color: var(--text-0);
-          margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
-        }
-        .sec-label::after {
-          content: ''; flex: 1; height: 1px; background: var(--border-md);
-        }
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
         }

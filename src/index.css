@@ -57,7 +57,25 @@ html.light {
 
 html, body {
   height: 100%;
-  overscroll-behavior-y: auto;
+  overscroll-behavior-y: none;
+}
+
+.sec-label {
+  font-size: 16.6px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-0);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bg-3);
 }
 
 body {
