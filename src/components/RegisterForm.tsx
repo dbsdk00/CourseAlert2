@@ -143,7 +143,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
       return;
     }
 
-    setToast(`${selected.name} 과목의 알림이 등록되었습니다! 🔔`);
+    setToast(`${selected.name} 과목의 알림이 등록되었습니다!`);
     setTimeout(() => setToast(null), 3000);
 
     setResults([]);
@@ -304,7 +304,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
           background: rgba(30, 30, 30, 0.85);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(250, 204, 21, 0.4);
+          border: none;
           color: var(--text-0);
           padding: 12px 20px;
           border-radius: 14px;

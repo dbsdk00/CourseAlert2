@@ -79,7 +79,7 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                     padding: '16px 18px', borderRadius: 12,
                     cursor: isRegistered ? 'default' : 'pointer',
                     background: isSelected ? 'var(--bg-4)' : 'var(--bg-2)',
-                    opacity: isRegistered ? 0.7 : 1,
+                    opacity: isRegistered ? 0.4 : 1,
                     transition: 'all 0.2s ease',
                     display: 'flex', alignItems: 'center',
                     justifyContent: 'space-between', gap: 12,

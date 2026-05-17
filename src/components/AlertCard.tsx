@@ -66,7 +66,7 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
       {/* footer */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--glass-border)',
+        marginTop: 7, paddingTop: 5, borderTop: '1px solid var(--glass-border)',
       }}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           {[

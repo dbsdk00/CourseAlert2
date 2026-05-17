@@ -127,7 +127,7 @@ export default function SearchInput(props: Props) {
           className="btn-search" 
           onClick={onSearch} 
           disabled={searchState === 'loading' || (typeof Notification !== 'undefined' && Notification.permission !== 'granted')} 
-          style={{ width: 44, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 38, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
           {searchState === 'loading' ? '...' : (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

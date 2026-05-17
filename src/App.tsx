@@ -29,6 +29,7 @@ export default function App() {
   const store = useAlertStore();
   const [isLight, setIsLight] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [activeFooterTab, setActiveFooterTab] = useState<'terms' | 'privacy' | 'contact' | null>(null);
 
   const toggleTheme = () => {
     setIsLight(!isLight);
@@ -120,11 +121,11 @@ export default function App() {
             fontWeight: 500,
             color: 'var(--text-3)'
           }}>
-            <a href="#terms" onClick={(e) => { e.preventDefault(); alert('이용약관\n\n본 서비스는 학내 수강신청 빈자리 알림용 개인 프로젝트이며, 상업적 이용 및 과도한 트래픽 유발을 금지합니다.'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">이용약관</a>
+            <a href="#terms" onClick={(e) => { e.preventDefault(); setActiveFooterTab('terms'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">이용약관</a>
             <span style={{ color: 'var(--bg-3)' }}>|</span>
-            <a href="#privacy" onClick={(e) => { e.preventDefault(); alert('개인정보처리방침\n\n본 서비스는 별도의 회원가입 절차가 없으며, 사용자의 브라우저 알림 권한 및 저장된 데이터는 로컬 브라우저(LocalStorage) 내에서만 처리됩니다.'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">개인정보처리방침</a>
+            <a href="#privacy" onClick={(e) => { e.preventDefault(); setActiveFooterTab('privacy'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">개인정보처리방침</a>
             <span style={{ color: 'var(--bg-3)' }}>|</span>
-            <a href="#contact" onClick={(e) => { e.preventDefault(); alert('문의하기\n\n서비스 관련 피드백 및 오류 제보는 개발자 이메일(support@coursealert.com)로 문의해 주세요.'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">문의하기</a>
+            <a href="#contact" onClick={(e) => { e.preventDefault(); setActiveFooterTab('contact'); }} style={{ color: 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link">문의하기</a>
           </div>
           <div style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'var(--mono)' }}>
             © {new Date().getFullYear()} CourseAlert. All rights reserved.
@@ -171,6 +172,64 @@ export default function App() {
               >
                 삭제
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer Bottom Sheet 모달 */}
+      {activeFooterTab && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)',
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+          zIndex: 3000,
+        }} onClick={() => setActiveFooterTab(null)}>
+          <div className="glass-panel" style={{
+            width: '100%', maxWidth: 480,
+            padding: '24px 24px 32px',
+            borderRadius: '24px 24px 0 0', // 바텀 시트 형태의 라운드 코너
+            background: 'var(--bg-1)',
+            animation: 'slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+            boxShadow: '0 -8px 32px rgba(0,0,0,0.4)',
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-0)' }}>
+                {activeFooterTab === 'terms' ? '이용약관' : activeFooterTab === 'privacy' ? '개인정보처리방침' : '문의하기'}
+              </span>
+              <button
+                onClick={() => setActiveFooterTab(null)}
+                style={{
+                  border: 'none', background: 'var(--bg-2)', color: 'var(--text-2)',
+                  width: 28, height: 28, borderRadius: '50%', cursor: 'pointer',
+                  fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ fontSize: 13.5, color: 'var(--text-2)', lineHeight: 1.6, maxHeight: '200px', overflowY: 'auto', paddingRight: 4 }} className="custom-scrollbar">
+              {activeFooterTab === 'terms' && (
+                <>
+                  본 서비스는 학내 수강신청 빈자리 알림용 개인 프로젝트입니다.<br /><br />
+                  1. 이용자는 본 서비스를 정상적인 목적으로만 사용해야 하며, 악의적인 다중 요청이나 비정상적인 접근을 금지합니다.<br />
+                  2. 서비스 오작동 또는 지연으로 인한 불이익에 대해 책임을 지지 않으므로 보조 수단으로 활용하시기 바랍니다.
+                </>
+              )}
+              {activeFooterTab === 'privacy' && (
+                <>
+                  본 서비스는 개인정보 침해를 원천 차단하기 위해 회원가입을 받지 않습니다.<br /><br />
+                  - **수집 정보**: 없음 (별도의 서버 저장을 하지 않습니다.)<br />
+                  - **데이터 보관**: 이용자의 알림 신청 내역은 브라우저 로컬 저장소(LocalStorage)에 보관되며, 브라우저 캐시를 지우거나 직접 삭제할 시 완전히 파기됩니다.
+                </>
+              )}
+              {activeFooterTab === 'contact' && (
+                <>
+                  서비스 이용 중 불편한 점이나 빈자리 알림 실패 등의 장애 제보는 아래 이메일로 연락해 주시면 적극 검토하겠습니다.<br /><br />
+                  - **이메일**: <a href="mailto:support@coursealert.com" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>support@coursealert.com</a><br />
+                  - **운영시간**: 상시 피드백 수렴 중
+                </>
+              )}
             </div>
           </div>
         </div>
