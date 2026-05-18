@@ -5,7 +5,7 @@ interface Props {
   activeUsersCount: number;
 }
 
-export default function TopBar({ serverOk, isLight, onToggleTheme, activeUsersCount }: Props) {
+export default function TopBar({ serverOk, isLight, onToggleTheme, activeUsersCount: _activeUsersCount }: Props) {
   const serverColor = serverOk === null ? 'var(--text-3)' : serverOk ? 'var(--text-2)' : 'var(--text-2)';
   const serverLabel = serverOk === null ? '연결 확인 중' : serverOk ? '서버 연결됨' : '서버 연결 실패';
   const serverBg = serverOk === null ? 'var(--bg-2)' : serverOk ? 'var(--bg-2)' : 'var(--bg-3)';
