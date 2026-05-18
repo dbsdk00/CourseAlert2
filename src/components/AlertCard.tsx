@@ -49,7 +49,7 @@ export default function AlertCard({ alert: a, onDelete }: Props) {
             </span>
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 400 }}>
-            {a.day}요일 {a.period}교시
+            {a.day}요일 {a.period}
           </div>
         </div>
 

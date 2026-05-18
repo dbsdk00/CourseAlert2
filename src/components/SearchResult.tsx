@@ -64,7 +64,7 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
 
           <div className="custom-scrollbar" style={{
             display: 'flex', flexDirection: 'column', gap: 8,
-            maxHeight: '280px', overflowY: 'auto', paddingRight: 4
+            maxHeight: '153px', overflowY: 'auto', paddingRight: 4
           }}>
             {results.map(course => {
               const isFull = course.enrolled >= course.limit;
@@ -96,7 +96,6 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                       }}>
                         {course.name}
                       </span>
-                      {isRegistered && <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>[등록됨]</span>}
                       <span style={{
                         fontSize: 10, color: 'var(--text-3)',
                         background: 'var(--bg-4)', borderRadius: 4,
@@ -112,12 +111,21 @@ export default function SearchResult({ results, selectedId, onSelect, searchStat
                   </div>
 
                   <div style={{
-                    flexShrink: 0, width: 62, fontSize: 13, fontWeight: 700, textAlign: 'right',
-                    letterSpacing: '-0.5px',
-                    fontFamily: 'var(--mono)',
+                    display: 'flex', alignItems: 'center', gap: 0, flexShrink: 0
                   }}>
-                    <span style={{ color: isFull ? '#8E8E93' : '#facc15' }}>{course.enrolled}</span>
-                    <span style={{ color: '#8E8E93', fontWeight: 400 }}> / {course.limit}</span>
+                    {isRegistered && (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginRight: 4 }} aria-label="등록됨">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    )}
+                    <div style={{
+                      width: 58, fontSize: 13, fontWeight: 700, textAlign: 'right',
+                      letterSpacing: '-0.5px',
+                      fontFamily: 'var(--mono)',
+                    }}>
+                      <span style={{ color: isFull ? '#8E8E93' : '#facc15' }}>{course.enrolled}</span>
+                      <span style={{ color: '#8E8E93', fontWeight: 400 }}> / {course.limit}</span>
+                    </div>
                   </div>
                 </div>
               );

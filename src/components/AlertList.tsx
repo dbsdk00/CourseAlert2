@@ -13,13 +13,13 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
       <div className="sec-label">
         등록된 알림
       </div>
-      <div className="glass-panel" style={{ 
-        padding: '20px 24px', 
-        borderRadius: 20, 
+      <div className="glass-panel" style={{
+        padding: '20px 24px',
+        borderRadius: 20,
         marginBottom: 36,
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: 16 
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16
       }}>
         {alerts.length === 0 ? (
           <div style={{
@@ -28,7 +28,7 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
           }}>
             <img src="/ling.png" style={{ width: '38.6px', height: '38.6px', marginBottom: 16, opacity: 0.4 }} />
             <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, fontWeight: 500 }}>
-              아직 등록된 알림이 없어요<br />위 폼에서 과목을 검색하고 추가해보세요
+              아직 등록된 알림이 없어요<br />과목을 검색하고 추가해보세요
             </div>
           </div>
         ) : (
@@ -48,15 +48,15 @@ export default function AlertList({ alerts, logs, onDelete }: Props) {
             빈자리 발생 기록
           </div>
           <div className="custom-scrollbar" style={{
-            display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 36,
+            display: 'flex', flexDirection: 'column', marginBottom: 36,
             maxHeight: '160px', overflowY: 'auto', paddingRight: 8, opacity: 0.8,
-            background: 'var(--bg-1)', borderRadius: 12, padding: '12px'
+            background: 'var(--bg-1)', borderRadius: 12, padding: '4px 16px'
           }}>
-            {logs.map(log => (
-              <div key={log.id} className="animate-slide-up" style={{
-                borderRadius: 10, padding: '10px 14px',
+            {logs.map((log, index) => (
+              <div key={log.id} style={{
+                padding: '12px 0',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                background: 'var(--bg-2)',
+                borderBottom: index !== logs.length - 1 ? '1px solid var(--bg-3)' : 'none',
                 flexShrink: 0
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -1,25 +1,11 @@
-import { useState, useEffect } from 'react';
-
 interface Props {
   serverOk: boolean | null;
   isLight: boolean;
   onToggleTheme: () => void;
+  activeUsersCount: number;
 }
 
-export default function TopBar({ serverOk, isLight, onToggleTheme }: Props) {
-  const [activeUsers, setActiveUsers] = useState(12);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveUsers(prev => {
-        const change = Math.random() > 0.5 ? 1 : -1;
-        const next = prev + change;
-        return next >= 10 && next <= 15 ? next : prev;
-      });
-    }, 4000 + Math.random() * 4000);
-    return () => clearInterval(interval);
-  }, []);
-
+export default function TopBar({ serverOk, isLight, onToggleTheme, activeUsersCount }: Props) {
   const serverColor = serverOk === null ? 'var(--text-3)' : serverOk ? 'var(--text-2)' : 'var(--text-2)';
   const serverLabel = serverOk === null ? '연결 확인 중' : serverOk ? '서버 연결됨' : '서버 연결 실패';
   const serverBg = serverOk === null ? 'var(--bg-2)' : serverOk ? 'var(--bg-2)' : 'var(--bg-3)';
@@ -58,7 +44,7 @@ export default function TopBar({ serverOk, isLight, onToggleTheme }: Props) {
 
         {/* 우측 상태 뱃지들 및 테마 토글 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button 
+          <button
             onClick={onToggleTheme}
             className="theme-toggle-btn"
             style={{
@@ -104,8 +90,8 @@ export default function TopBar({ serverOk, isLight, onToggleTheme }: Props) {
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            <span className="user-count-text">현재 {activeUsers}명의 학생이 사용 중</span>
-            <span className="user-count-mobile-text">{activeUsers}명 사용 중</span>
+            <span className="user-count-text">현재 {activeUsersCount}명 사용 중</span>
+            <span className="user-count-mobile-text">{activeUsersCount}명 사용 중</span>
           </span>
 
           <style>{`

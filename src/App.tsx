@@ -68,7 +68,7 @@ export default function App() {
             // ready가 너무 오래 걸릴 수 있으므로 타임아웃 1초 적용
             const swPromise = navigator.serviceWorker.ready;
             const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject('SW timeout'), 1000));
-            
+
             const reg = await Promise.race([swPromise, timeoutPromise]) as ServiceWorkerRegistration;
             await reg.showNotification(title, options);
             console.log('SW notification sent');
@@ -89,12 +89,13 @@ export default function App() {
   return (
     <>
       <div className="ambient" />
+      <TopBar
+        serverOk={store.serverOk}
+        isLight={isLight}
+        onToggleTheme={toggleTheme}
+        activeUsersCount={store.activeUsersCount}
+      />
       <div className="shell">
-        <TopBar 
-          serverOk={store.serverOk} 
-          isLight={isLight}
-          onToggleTheme={toggleTheme}
-        />
         <RegisterForm onRegister={store.register} alerts={store.alerts} />
         <AlertList
           alerts={store.alerts}
@@ -154,7 +155,7 @@ export default function App() {
               삭제하면 더 이상 빈자리 알림을<br />받을 수 없게 됩니다.
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <button 
+              <button
                 onClick={() => setDeleteTargetId(null)}
                 style={{
                   flex: 1, height: 48, borderRadius: 14, border: '1px solid var(--border-md)',
@@ -163,7 +164,7 @@ export default function App() {
               >
                 취소
               </button>
-              <button 
+              <button
                 onClick={confirmDelete}
                 style={{
                   flex: 1, height: 48, borderRadius: 14, border: 'none',
@@ -210,24 +211,44 @@ export default function App() {
             </div>
             <div style={{ fontSize: 13.5, color: 'var(--text-2)', lineHeight: 1.6, maxHeight: '200px', overflowY: 'auto', paddingRight: 4 }} className="custom-scrollbar">
               {activeFooterTab === 'terms' && (
-                <>
-                  본 서비스는 학내 수강신청 빈자리 알림용 개인 프로젝트입니다.<br /><br />
-                  1. 이용자는 본 서비스를 정상적인 목적으로만 사용해야 하며, 악의적인 다중 요청이나 비정상적인 접근을 금지합니다.<br />
-                  2. 서비스 오작동 또는 지연으로 인한 불이익에 대해 책임을 지지 않으므로 보조 수단으로 활용하시기 바랍니다.
-                </>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div>
+                    <strong style={{ color: 'var(--text-1)', fontSize: 14 }}>제1조 (목적)</strong><br />
+                    본 약관은 CourseAlert(이하 "서비스")가 제공하는 수강신청 잔여 여석 실시간 알림 서비스의 이용 조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.
+                  </div>
+                  <div>
+                    <strong style={{ color: 'var(--text-1)', fontSize: 14 }}>제2조 (서비스의 성격 및 면책사항)</strong><br />
+                    1. 본 서비스는 대학 수강신청 시스템의 공개 정보 또는 가상 시뮬레이션 데이터를 실시간 조회하여 잔여석 발생 시 웹 푸시(Web Push) 알림으로 중개하는 개인 학업 보조용 오픈소스 유틸리티입니다.<br />
+                    2. 서비스 제공자는 통신망 장애, 서버 다운, 학내 시스템 점검, 기기 백그라운드 제한 정책 등으로 발생한 알림 전송의 누락, 지연, 미수신에 대해 어떠한 법적 책임도 지지 않습니다. 모든 수강신청 의사결정과 결과는 전적으로 이용자 본인의 책임이며, 본 서비스는 단순 참고용 보조 수단으로만 활용하여야 합니다.
+                  </div>
+                  <div>
+                    <strong style={{ color: 'var(--text-1)', fontSize: 14 }}>제3조 (이용자의 의무 및 제한)</strong><br />
+                    1. 이용자는 정상적인 수강신청 모니터링 목적에 부합하는 범위 내에서만 본 서비스를 성실히 이용해야 합니다.<br />
+                    2. 악의적인 대용량 요청 생성, 비정상적 API 우회 공격(DDoS 등), 또는 매크로 등의 도구를 사용하여 학내 서버 및 본 서비스 서버의 업무를 방해하는 경우, 즉각적인 서비스 차단 및 IP 차단 등 영구적 이용 제한 조치와 함께 법적 책임이 부과될 수 있습니다.
+                  </div>
+                </div>
               )}
               {activeFooterTab === 'privacy' && (
-                <>
-                  본 서비스는 개인정보 침해를 원천 차단하기 위해 회원가입을 받지 않습니다.<br /><br />
-                  - **수집 정보**: 없음 (별도의 서버 저장을 하지 않습니다.)<br />
-                  - **데이터 보관**: 이용자의 알림 신청 내역은 브라우저 로컬 저장소(LocalStorage)에 보관되며, 브라우저 캐시를 지우거나 직접 삭제할 시 완전히 파기됩니다.
-                </>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div>
+                    <strong style={{ color: 'var(--text-1)', fontSize: 14 }}>1. 개인정보 수집 및 처리의 원천 방지</strong><br />
+                    본 서비스는 무가입/무인증 기반으로 설계되어 회원가입, 이메일, 학번, 성명 등 일체의 이용자 개인식별정보를 요구하거나 서버에 전송·수집하지 않습니다.
+                  </div>
+                  <div>
+                    <strong style={{ color: 'var(--text-1)', fontSize: 14 }}>2. 로컬 디바이스 내 데이터 전역 격리 (LocalStorage)</strong><br />
+                    이용자가 설정한 관심 과목 코드, 알림 등록 시간, 갱신 주기 등의 모니터링 내역 데이터는 서버로 일절 전송되지 않으며, 오직 이용자 기기의 웹 브라우저 보안 샌드박스 내부(LocalStorage)에만 안전하게 암호화 보관됩니다. 해당 데이터는 브라우저 캐시 삭제 또는 직접 등록 해제 시 영구적이고 즉각적인 파기가 완료됩니다.
+                  </div>
+                  <div>
+                    <strong style={{ color: 'var(--text-1)', fontSize: 14 }}>3. 웹 푸시 암호화 기기 정보</strong><br />
+                    Web Push API 구독 설정 시 암호화된 익명화된 기기 토큰(Endpoint URL 및 브라우저 공개키)이 발송 서버에 일시 연동될 수 있습니다. 이는 실시간 빈자리 알림 메시지 발송 목적에만 100% 국한되며, IP 주소 등의 접속 로그 및 기타 사용자 개인 정보와 어떠한 형태로도 연동되거나 결합되지 않습니다.
+                  </div>
+                </div>
               )}
               {activeFooterTab === 'contact' && (
                 <>
                   서비스 이용 중 불편한 점이나 빈자리 알림 실패 등의 장애 제보는 아래 이메일로 연락해 주시면 적극 검토하겠습니다.<br /><br />
-                  - **이메일**: <a href="mailto:support@coursealert.com" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>support@coursealert.com</a><br />
-                  - **운영시간**: 상시 피드백 수렴 중
+                  - 이메일: <a href="mailto:support@coursealert.com" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>support@coursealert.com</a><br />
+                  - 운영시간: 상시 피드백 수렴 중 (24시간 자동 모니터링 엔진 가동)
                 </>
               )}
             </div>

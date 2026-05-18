@@ -56,7 +56,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
           const [from, to] = c.time.includes('-')
             ? c.time.split('-').map(Number)
             : [Number(c.time), Number(c.time)];
-          return c.day === day && from <= Number(timeTo) && to >= Number(timeFrom);
+          return c.day === day && from >= Number(timeFrom) && to <= Number(timeTo);
         });
 
         if (filtered.length === 0) { setSearchState('empty'); return; }
@@ -90,7 +90,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
               const [from, to] = c.time.includes('-')
                 ? c.time.split('-').map(Number)
                 : [Number(c.time), Number(c.time)];
-              return c.day === day && from <= Number(timeTo) && to >= Number(timeFrom);
+              return c.day === day && from >= Number(timeFrom) && to <= Number(timeTo);
             });
             setResults(filtered);
           }
@@ -106,6 +106,12 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
     const selected = results.find(r => r.courseId === selectedId);
     if (!selected) return;
 
+    if (alerts.length >= 5) {
+      setToast('알림은 최대 5개까지만 등록할 수 있습니다.');
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+
     if (selected.enrolled < selected.limit) {
       alert('이미 여석이 있는 강의입니다.\n직접 수강신청하세요.');
       return;
@@ -119,7 +125,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
           return;
         }
       } else if (Notification.permission === 'denied') {
-        alert('알림이 차단되어 있습니다. 주소창 왼쪽 자물쇠를 눌러 알림 권한을 [허용]으로 변경해주세요.');
+        alert('알림이 차단되어 있습니다. 주소창 왼쪽 자물쇠를 눌러 알림 권한을 설정해주세요.');
         return;
       }
     }
@@ -142,9 +148,6 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
       setSelectedId(null);
       return;
     }
-
-    setToast(`${selected.name} 과목의 알림이 등록되었습니다!`);
-    setTimeout(() => setToast(null), 3000);
 
     setResults([]);
     setSelectedId(null);
@@ -169,11 +172,19 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
   return (
     <>
       {toast && (
-        <div className="custom-toast animate-toast">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
+        <div className="custom-toast animate-toast" style={{
+          background: 'rgba(239, 68, 68, 0.95)',
+          color: '#fff',
+          boxShadow: 'none',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          top: '76px',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <span>{toast}</span>
+          <span style={{ fontSize: 13, fontWeight: 700 }}>{toast}</span>
         </div>
       )}
 
@@ -207,7 +218,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
 
         {/* 하단 버튼 영역 */}
         <div className="form-bottom" style={{
-          marginTop: 20, paddingTop: 16
+          marginTop: 20, paddingTop: 14
         }}>
           <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'flex-end' }}>
             {typeof Notification !== 'undefined' && Notification.permission !== 'granted' ? (

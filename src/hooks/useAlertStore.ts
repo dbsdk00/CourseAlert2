@@ -42,6 +42,36 @@ export function useAlertStore() {
   const [hitCount, setHitCount] = useState<number>(() => {
     try { const saved = localStorage.getItem('courseHitCount'); return saved ? Number(saved) : 0; } catch { return 0; }
   });
+  const [activeUsersCount, setActiveUsersCount] = useState<number>(1);
+
+  // 실시간 접속자 하트비트 핑 연동
+  useEffect(() => {
+    let clientId = localStorage.getItem('courseAlertClientId');
+    if (!clientId) {
+      clientId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('courseAlertClientId', clientId);
+    }
+
+    const ping = async () => {
+      try {
+        const res = await fetch(`${API}/api/active-users/ping`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setActiveUsersCount(data.count);
+        }
+      } catch (err) {
+        console.error('Active users ping failed:', err);
+      }
+    };
+
+    ping();
+    const id = setInterval(ping, 5000);
+    return () => clearInterval(id);
+  }, []);
 
   // 서버 헬스체크
   useEffect(() => {
@@ -277,6 +307,9 @@ export function useAlertStore() {
   }, []);
 
   const register = useCallback(({ mode, code, division, day, timeFrom, timeTo, name, enrolled, limit }: RegisterParams) => {
+    if (alerts.length >= 5) {
+      return false;
+    }
     if (mode === 'course') {
       const courseId = `${code}-${division}`;
       if (alerts.some(a => a.code === courseId)) {
@@ -339,7 +372,7 @@ export function useAlertStore() {
   const hasMonitoring = alerts.length > 0;
 
   return {
-    alerts, logs, serverOk, hitCount,
+    alerts, logs, serverOk, hitCount, activeUsersCount,
     monitoringCount, hasMonitoring,
     register, remove,
     resetAll, setOnVacancy,
