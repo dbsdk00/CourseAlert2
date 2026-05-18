@@ -247,7 +247,7 @@ export default function App() {
               {activeFooterTab === 'contact' && (
                 <>
                   서비스 이용 중 불편한 점이나 빈자리 알림 실패 등의 장애 제보는 아래 이메일로 연락해 주시면 적극 검토하겠습니다.<br /><br />
-                  - 이메일: <a href="mailto:support@coursealert.com" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>support@coursealert.com</a><br />
+                  - 이메일: <a href="mailto:coursealert.team@gmail.com" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>coursealert.team@gmail.com</a><br />
                   - 운영시간: 상시 피드백 수렴 중 (24시간 자동 모니터링 엔진 가동)
                 </>
               )}
