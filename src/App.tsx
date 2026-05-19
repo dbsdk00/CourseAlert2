@@ -48,7 +48,8 @@ export default function App() {
       console.log('Vacancy detected:', triggered.name);
       playBeep();
 
-      // 브라우저 시스템 알림 발송 (앱 외부에서도 보이도록)
+      // 브라우저 로컬 시스템 알림 발송부 비활성화 (백엔드 푸시 알림과의 2중 중복 수신 방지)
+      /*
       if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         const registrationUrl = 'https://sugang.sungkyul.ac.kr';
         const title = `${triggered.name} 빈자리 발견!`;
@@ -83,6 +84,7 @@ export default function App() {
       } else {
         console.warn('Notification permission not granted or API missing');
       }
+      */
     });
   }, [store.setOnVacancy]);
 
