@@ -42,7 +42,7 @@ export function useAlertStore() {
   const [hitCount, setHitCount] = useState<number>(() => {
     try { const saved = localStorage.getItem('courseHitCount'); return saved ? Number(saved) : 0; } catch { return 0; }
   });
-  const [activeUsersCount, setActiveUsersCount] = useState<number>(1);
+  const [activeUsersCount] = useState<number>(1);
 
   // 실시간 접속자 하트비트 핑 연동
   useEffect(() => {
@@ -52,6 +52,7 @@ export function useAlertStore() {
       localStorage.setItem('courseAlertClientId', clientId);
     }
 
+    /*
     const ping = async () => {
       try {
         const res = await fetch(`${API}/api/active-users/ping`, {
@@ -67,10 +68,12 @@ export function useAlertStore() {
         console.error('Active users ping failed:', err);
       }
     };
+    */
 
-    ping();
-    const id = setInterval(ping, 5000);
-    return () => clearInterval(id);
+    // 사용현황 기능 한시적 비활성화로 인해 하트비트 핑 비활성 처리
+    // ping();
+    // const id = setInterval(ping, 5000);
+    // return () => clearInterval(id);
   }, []);
 
   // 서버 헬스체크
