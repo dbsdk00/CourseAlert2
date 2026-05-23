@@ -276,7 +276,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
           100% { transform: scale(1); }
         }
         .btn-direct-link {
-          height: 38px; padding: 0 28px; border-radius: 10px;
+          height: 38px; padding: 0 16px; border-radius: 10px;
           border: none; background: var(--accent);
           color: #1a1a1a; font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer; transition: all 0.2s; white-space: nowrap;
@@ -290,7 +290,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
           background: var(--bg-4); color: var(--text-2);
         }
         .btn-register {
-          height: 38px; padding: 0 24px; border-radius: 10px;
+          height: 38px; padding: 0 16px; border-radius: 10px;
           border: none; background: var(--accent);
           color: #1a1a1a; font-size: 13px; font-weight: 700;
           font-family: var(--sans); cursor: pointer;

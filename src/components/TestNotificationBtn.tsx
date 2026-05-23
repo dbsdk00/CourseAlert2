@@ -43,18 +43,19 @@ export default function TestNotificationBtn() {
         border: 'none',
         color: isTesting ? 'var(--text-3)' : 'var(--text-2)',
         opacity: isTesting ? 0.6 : 1,
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: 600,
         cursor: isTesting ? 'not-allowed' : 'pointer',
-        padding: '0 8px',
+        padding: '0 2px',
         textDecoration: 'underline',
         textUnderlineOffset: 4,
         transition: 'all 0.3s ease',
         display: 'flex',
         alignItems: 'center',
-        gap: 4,
+        gap: 3,
         whiteSpace: 'nowrap',
-        flexShrink: 0
+        flexShrink: 0,
+        marginLeft: '-4px'
       }}
     >
       {isTesting ? (
