@@ -358,6 +358,27 @@ export function useAlertStore() {
     setAlerts([]);
     setLogs([]);
     setHitCount(0);
+
+    // 완전 초기화 (로컬/세션 스토리지, 쿠키 삭제)
+    localStorage.clear();
+    sessionStorage.clear();
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+
+    // 서비스 워커(푸시 구독 등) 등록 해제
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+
+    // 완전한 초기 상태 반영을 위해 새로고침
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   }, []);
 
   useEffect(() => {

@@ -96,7 +96,7 @@ export default function NotificationGuide() {
               {/* iOS 가이드 */}
               <div style={{ background: 'var(--bg-2)', padding: '16px', borderRadius: '16px' }}>
                 <h3 style={{ margin: '0 0 10px', fontSize: 15, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  iOS (아이폰/아이패드) <span style={{ fontSize: 11, background: 'rgba(255,204,0,0.2)', padding: '2px 6px', borderRadius: 4, marginLeft: 'auto' }}>필수</span>
+                  iOS (아이폰/아이패드)
                 </h3>
                 <p style={{ margin: '0 0 8px', fontSize: 13, color: 'var(--text-1)', lineHeight: 1.5 }}>
                   애플 정책상 반드시 <b>Safari 브라우저</b>에서 <b>'홈 화면에 추가'</b>를 해야만 알림을 받을 수 있습니다.
@@ -106,6 +106,7 @@ export default function NotificationGuide() {
                   <li><b>'홈 화면에 추가'</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg> 클릭</li>
                   <li>바탕화면에 생성된 앱 아이콘으로 접속</li>
                   <li>알림 권한 <b>'허용'</b> 클릭</li>
+                  <li style={{ marginTop: 8, color: 'var(--text-2)' }}><b>설정 완료 후 반드시 화면을 새로고침 해주세요!</b></li>
                 </ol>
               </div>
 
@@ -116,14 +117,15 @@ export default function NotificationGuide() {
                 </h3>
                 <ol style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6 }}>
                   <li>알림 권한 팝업 시 <b>'허용'</b> 클릭</li>
-                  <li>팝업이 없다면 주소창 왼쪽 <b>[설정]</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><circle cx="8" cy="8" r="2"></circle><line x1="10" y1="8" x2="20" y2="8"></line><circle cx="16" cy="16" r="2"></circle><line x1="4" y1="16" x2="14" y2="16"></line></svg> 클릭</li>
-                  <li><b>'권한'</b> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><polyline points="9 18 15 12 9 6"></polyline></svg> <b>'알림'</b> 스위치를 켜주세요 <br/>
-                    <span style={{display:'inline-flex', alignItems:'center', background:'rgba(255,255,255,0.05)', padding:'4px 8px', borderRadius:'8px', marginTop: 6, fontSize: 12}}>
-                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginRight: 6 }}><rect x="1" y="1" width="34" height="18" rx="9" stroke="var(--text-2)" strokeWidth="2" fill="transparent"/><circle cx="10" cy="10" r="5" fill="var(--text-2)"/></svg>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginLeft: 6 }}><rect width="36" height="20" rx="10" fill="var(--accent)"/><circle cx="26" cy="10" r="8" fill="#000"/></svg>
+                  <li>팝업이 없다면 주소창 왼쪽 <b>[자물쇠]</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> 클릭</li>
+                  <li><b>'권한'</b> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><polyline points="9 18 15 12 9 6"></polyline></svg> <b>'알림'</b> 스위치를 켜주세요 <br />
+                    <span style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '8px', marginTop: 6, fontSize: 12 }}>
+                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginRight: 6 }}><rect x="1" y="1" width="34" height="18" rx="9" stroke="var(--text-2)" strokeWidth="2" fill="transparent" /><circle cx="10" cy="10" r="5" fill="var(--text-2)" /></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginLeft: 6 }}><rect width="36" height="20" rx="10" fill="var(--accent)" /><circle cx="26" cy="10" r="8" fill="#000" /></svg>
                     </span>
                   </li>
+                  <li style={{ marginTop: 8, color: 'var(--text-2)' }}><b>설정 완료 후 반드시 화면을 새로고침 해주세요!</b></li>
                 </ol>
               </div>
 
@@ -133,14 +135,15 @@ export default function NotificationGuide() {
                   PC (Chrome / Edge / Safari)
                 </h3>
                 <ol style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6 }}>
-                  <li>주소창 왼쪽 <b>[설정]</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><circle cx="8" cy="8" r="2"></circle><line x1="10" y1="8" x2="20" y2="8"></line><circle cx="16" cy="16" r="2"></circle><line x1="4" y1="16" x2="14" y2="16"></line></svg> 클릭</li>
-                  <li><b>'사이트 설정'</b> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><polyline points="9 18 15 12 9 6"></polyline></svg> <b>'알림'</b> 스위치를 켜주세요 <br/>
-                    <span style={{display:'inline-flex', alignItems:'center', background:'rgba(255,255,255,0.05)', padding:'4px 8px', borderRadius:'8px', marginTop: 6, fontSize: 12}}>
-                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginRight: 6 }}><rect x="1" y="1" width="34" height="18" rx="9" stroke="var(--text-2)" strokeWidth="2" fill="transparent"/><circle cx="10" cy="10" r="5" fill="var(--text-2)"/></svg>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginLeft: 6 }}><rect width="36" height="20" rx="10" fill="var(--accent)"/><circle cx="26" cy="10" r="8" fill="#000"/></svg>
+                  <li>주소창 왼쪽 <b>[자물쇠]</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> 클릭</li>
+                  <li><b>'사이트 설정'</b> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', margin: '0 2px' }}><polyline points="9 18 15 12 9 6"></polyline></svg> <b>'알림'</b> 스위치를 켜주세요 <br />
+                    <span style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '8px', marginTop: 6, fontSize: 12 }}>
+                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginRight: 6 }}><rect x="1" y="1" width="34" height="18" rx="9" stroke="var(--text-2)" strokeWidth="2" fill="transparent" /><circle cx="10" cy="10" r="5" fill="var(--text-2)" /></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                      <svg width="24" height="14" viewBox="0 0 36 20" fill="none" style={{ verticalAlign: 'middle', marginLeft: 6 }}><rect width="36" height="20" rx="10" fill="var(--accent)" /><circle cx="26" cy="10" r="8" fill="#000" /></svg>
                     </span>
                   </li>
+                  <li style={{ marginTop: 8, color: 'var(--text-2)' }}><b>설정 완료 후 반드시 화면을 새로고침 해주세요!</b></li>
                 </ol>
               </div>
             </div>

@@ -27,7 +27,7 @@ export default function TestNotificationBtn() {
       console.error('Test notification failed:', err);
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       if (isIOS) {
-        alert('테스트 알림 발송에 실패했습니다.\n\n아이폰(iOS) 유저의 경우, 사파리 브라우저 하단의 [공유(↑)] 버튼을 눌러 [홈 화면에 추가]를 한 뒤, 바탕화면에 생성된 앱으로 접속해야만 알림을 받을 수 있습니다.');
+        alert('테스트 알림 발송에 실패했습니다.\n\n아이폰(iOS) 유저의 경우, "사파리(Safari) 브라우저" 하단의 [공유(↑)] 버튼을 눌러 *"홈 화면에 추가"*를 한 뒤, 바탕화면에 생성된 앱으로 접속해야만 알림을 받을 수 있습니다.');
       } else {
         alert('테스트 알림 발송에 실패했습니다.\n브라우저 알림 설정이 차단되어 있는지 확인해 주세요.');
       }
@@ -52,7 +52,9 @@ export default function TestNotificationBtn() {
         transition: 'all 0.3s ease',
         display: 'flex',
         alignItems: 'center',
-        gap: 4
+        gap: 4,
+        whiteSpace: 'nowrap',
+        flexShrink: 0
       }}
     >
       {isTesting ? (
