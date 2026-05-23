@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import type { RegisterMode, RegisterParams, CourseResult, AlertItem } from '../types';
 import SearchInput from './SearchInput';
 import SearchResult from './SearchResult';
+import NotificationGuide from './NotificationGuide';
+import TestNotificationBtn from './TestNotificationBtn';
 
 interface Props {
   onRegister: (params: RegisterParams) => boolean;
@@ -220,37 +222,28 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
         <div className="form-bottom" style={{
           marginTop: 20, paddingTop: 14
         }}>
-          <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: typeof Notification !== 'undefined' && Notification.permission !== 'granted' ? 'flex-end' : 'space-between', alignItems: 'center' }}>
             {typeof Notification !== 'undefined' && Notification.permission !== 'granted' ? (
-              <button
-                className="btn-permission"
-                onClick={async () => {
-                  if (Notification.permission === 'denied') {
-                    alert('알림 권한이 차단되어 있습니다.\n\n[해제 방법]\n1. 브라우저 주소창 왼쪽의 아이콘(자물쇠 또는 설정) 클릭\n2. 알림 권한을 "허용"으로 변경\n3. 페이지를 새로고침 해주세요.');
-                    return;
-                  }
-                  const perm = await Notification.requestPermission();
-                  if (perm === 'granted') window.location.reload();
-                }}
-              >
-                알림 권한 허용하기
-              </button>
+              <NotificationGuide />
             ) : (
               <>
-                <button
-                  className="btn-direct-link"
-                  onClick={() => window.open('https://sugang.sungkyul.ac.kr', '_blank')}
-                  disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! >= results.find(r => r.courseId === selectedId)?.limit!)}
-                >
-                  신청하러 가기
-                </button>
-                <button
-                  className="btn-register"
-                  onClick={handleRegister}
-                  disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit!)}
-                >
-                  알림 등록
-                </button>
+                <TestNotificationBtn />
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button
+                    className="btn-direct-link"
+                    onClick={() => window.open('https://sugang.sungkyul.ac.kr', '_blank')}
+                    disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! >= results.find(r => r.courseId === selectedId)?.limit!)}
+                  >
+                    신청하러 가기
+                  </button>
+                  <button
+                    className="btn-register"
+                    onClick={handleRegister}
+                    disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit!)}
+                  >
+                    알림 등록
+                  </button>
+                </div>
               </>
             )}
           </div>
