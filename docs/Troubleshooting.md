@@ -16,3 +16,8 @@
 ## 3. iOS Input Zoom Issue
 * **문제**: 인풋 클릭 시 화면이 자동으로 확대되어 UI가 깨짐.
 * **해결**: 모든 인풋 요소의 `font-size`를 `13.8px` 이상으로 설정하고, `index.html`의 viewport meta 태그를 최적화함.
+
+## 4. Vercel - GitHub Webhook 연결 끊김 (자동 배포 먹통)
+* **문제**: `git push`를 해도 Vercel에서 배포가 시작되지 않고, "No attribution data available" 또는 "The provided GitHub repository does not contain the requested branch..." 에러 발생.
+* **원인**: 깃허브 레포지토리의 공개 범위(Private -> Public)를 변경하거나 권한 토큰이 만료되어 Vercel 계정과 깃허브 간의 OAuth 연결이 끊어짐.
+* **해결**: Vercel 대시보드 우측 상단 프로필 👉 **Account Settings** 👉 **Authentication(Login Connections)** 에서 기존 GitHub 연동을 끊고 다시 연결(`Connect`)한 뒤, 프로젝트 설정에서 레포지토리를 다시 매핑해줌. 급할 때는 `npx vercel --prod` 로 로컬 강제 배포 가능.

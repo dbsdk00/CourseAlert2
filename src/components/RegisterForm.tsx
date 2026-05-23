@@ -169,6 +169,7 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
   const onInputChanged = () => {
     setSearchState('idle');
     setResults([]);
+    setSelectedId(null);
   };
 
   return (
@@ -226,25 +227,30 @@ export default function RegisterForm({ onRegister, alerts }: Props) {
             {typeof Notification !== 'undefined' && Notification.permission !== 'granted' ? (
               <NotificationGuide />
             ) : (
-              <>
-                <TestNotificationBtn />
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <button
-                    className="btn-direct-link"
-                    onClick={() => window.open('https://sugang.sungkyul.ac.kr', '_blank')}
-                    disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! >= results.find(r => r.courseId === selectedId)?.limit!)}
-                  >
-                    신청하러 가기
-                  </button>
-                  <button
-                    className="btn-register"
-                    onClick={handleRegister}
-                    disabled={!selectedId || (results.find(r => r.courseId === selectedId)?.enrolled! < results.find(r => r.courseId === selectedId)?.limit!)}
-                  >
-                    알림 등록
-                  </button>
-                </div>
-              </>
+              (() => {
+                const selectedCourse = results.find(r => r.courseId === selectedId);
+                return (
+                  <>
+                    <TestNotificationBtn />
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <button
+                        className="btn-direct-link"
+                        onClick={() => window.open('https://sugang.sungkyul.ac.kr', '_blank')}
+                        disabled={!selectedCourse || selectedCourse.enrolled >= selectedCourse.limit}
+                      >
+                        신청하러 가기
+                      </button>
+                      <button
+                        className="btn-register"
+                        onClick={handleRegister}
+                        disabled={!selectedCourse || selectedCourse.enrolled < selectedCourse.limit}
+                      >
+                        알림 등록
+                      </button>
+                    </div>
+                  </>
+                );
+              })()
             )}
           </div>
         </div>
